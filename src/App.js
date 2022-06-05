@@ -1,19 +1,17 @@
 import logo from './logo.svg';
 import './App.css';
+import {
+  Switch,
+  Route
+} from "react-router-dom";
+import Webstore from './Webstore';
+import Admin from './Admin';
 
 function App() {
   return (
-    <div className="App">
-      <div className="store-header">
-        Header
+      <div>
+        test
       </div>
-      <div className="store-body">
-      Content
-      </div>
-      <div className="store-footer">
-        Footer
-      </div>
-    </div>
   );
 }
 

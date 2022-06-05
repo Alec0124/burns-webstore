@@ -1,19 +1,113 @@
-.App {
-  text-align: center;
-  display: grid;
-  grid-template-columns: 1fr 1500px 1fr;
-  grid-template-rows: 100px 1fr 100px;
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+  /* Styles */
 }
+
+/* Smartphones (landscape) ----------- */
+@media only screen and (min-width : 321px) {
+  /* Styles */
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen and (max-width : 320px) {
+  /* Styles */
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
+  /* Styles */
+}
+
+/* iPads (landscape) ----------- */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+  /* Styles */
+}
+
+/* iPads (portrait) ----------- */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+  /* Styles */
+}
+
+/* Desktops and laptops ----------- */
+@media only screen and (min-width : 1224px) {
+  /* Styles */
+  .App {
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 1224px 1fr;
+    grid-template-rows: 100px 1fr 100px;
+  }
+  .admin-app {
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+    grid-template-rows: 1fr;
+    background-color: darkgrey;
+  }
+  .admin-nav {
+    grid-area: 1 / 1 / 2 / 2;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+  }
+  .admin-nav-cat {
+    border: 1px solid black;
+    flex: 1 0 50px;
+    padding-top: 20%;
+    padding-bottom: 5%;
+    background-color: navy;
+    color: white;
+  }
+  .selected {
+    background-color: darkcyan;
+  }
+  .selected:hover {
+    background-color: darkcyan;
+    color: white;
+  }
+  .admin-nav-cat:hover {
+    background-color: cornflowerblue;
+    color: black;
+  }
+  .selected:hover {
+    background-color: darkcyan;
+    color: white;
+  }
+  .admin-body {
+    grid-area: 1 / 2 / 2 / 3;
+  }
+}
+
+/* Large screens ----------- */
+@media only screen and (min-width : 1824px) {
+
+  /* Styles */
+  .App {
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 1500px 1fr;
+    grid-template-rows: 100px 1fr 100px;
+  }
+}
+
+/* iPhone 4 ----------- */
+@media only screen and (-webkit-min-device-pixel-ratio : 1.5),
+only screen and (min-device-pixel-ratio : 1.5) {
+  /* Styles */
+}
+
 
 .store-header {
   grid-area: 1 / 1 / 2 / 4;
   background-color: bisque;
 }
+
 .store-body {
   grid-area: 2 / 2 / 3 / 3;
   height: 800px;
   background-color: blue;
 }
+
 .store-footer {
   grid-area: 3 / 1 / 4 / 4;
   background-color: cadetblue;
