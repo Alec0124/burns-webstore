@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import Webstore from './Webstore';
 import Admin from './Admin';
+import ItemMaster from './ItemMaster';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,7 +17,7 @@ root.render(
     <Routes>
       <Route exact path="/" element={<Webstore />} />
         
-      <Route path="/admin" element={<Admin />} />
+      <Route path="/admin/*" element={<Admin />} />
       </Routes>
   </Router>
 );
