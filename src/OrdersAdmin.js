@@ -71,35 +71,24 @@ function OrdersAdmin({ setSelectedCat }) {
     return (
       <div className="item-master">
       <div className="row">
-          <span>Item #:</span>
+          <span>Order #:</span>
           <input type="text" />
+          <img className='search-icon' src={search} alt="Search Button" />
         </div>
         <div className="row">
-          <span>Item Name:</span>
-          <input type="text" />
+          <span>Created Time Stamp:</span>
         </div>
         <div className="row">
-          <span>Item Description:</span>
-          <input type="text-box" />
+          <span>Order Date:</span>
         </div>
         <div className="row">
-          <span>Type: </span>
-          <span>Stock</span>
+          <span>Client Id: </span>
         </div>
         <div className="row">
-          <span>Item Status: </span>
+          <span>Order Status: </span>
         </div>
         <div className="row">
-          <span>Cost:</span>
-          <input type="number" />
-        </div>
-        <div className="row">
-          <span>Price:</span>
-          <input type="number" />
-        </div>
-        <div className="row">
-          <span>Webstore Status: </span>
-
+          <div>Line Items</div>
         </div>
         <div className="row">
           <button className='inactive'>Create New Item</button>
@@ -114,35 +103,24 @@ function OrdersAdmin({ setSelectedCat }) {
     return (
       <div className="item-master">
       <div className="row">
-          <span>Item #:</span>
+          <span>Order #:</span>
           <input type="text" />
+          <img className='search-icon' src={search} alt="Search Button" />
         </div>
         <div className="row">
-          <span>Item Name:</span>
-          <input type="text" />
+          <span>Created Time Stamp:</span>
         </div>
         <div className="row">
-          <span>Item Description:</span>
-          <input type="text-box" />
+          <span>Order Date:</span>
         </div>
         <div className="row">
-          <span>Type: </span>
-          <span>Stock</span>
+          <span>Client Id: </span>
         </div>
         <div className="row">
-          <span>Item Status: </span>
+          <span>Order Status: </span>
         </div>
         <div className="row">
-          <span>Cost:</span>
-          <input type="number" />
-        </div>
-        <div className="row">
-          <span>Price:</span>
-          <input type="number" />
-        </div>
-        <div className="row">
-          <span>Webstore Status: </span>
-
+          <div>Line Items</div>
         </div>
         <div className="row">
           <button className='inactive'>Create New Item</button>

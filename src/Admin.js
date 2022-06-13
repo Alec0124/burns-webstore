@@ -13,6 +13,7 @@ function Admin() {
     if ((selectedCat === 'general' && catName === 'general')
       || (selectedCat === 'item-master' && catName === 'item-master')
       || (selectedCat === 'orders' && catName === 'orders')
+      || (selectedCat === 'clients' && catName === 'clients')
     ) {
       return 'admin-nav-cat selected'
     } else return 'admin-nav-cat';

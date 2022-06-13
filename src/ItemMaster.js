@@ -4,6 +4,15 @@ import { useState } from 'react';
 function ItemMaster({ setSelectedCat }) {
 
   const [mode, setMode] = useState('view');
+  const [itemNumber, setItemNumber] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [cost, setCost] = useState(0);
+  const [price, setPrice] = useState(0);
+  const [taxable, setTaxable] = useState(false);
+  const [status, setStatus] = useState("active");
+  const [type, setType] = useState('stock');
+  const [webstoreStatus, setWebstoreStatus] = useState("inactive");
 
   const setModeCreate = () => {
     setMode("create");
@@ -22,6 +31,12 @@ function ItemMaster({ setSelectedCat }) {
   }
   const onClickSave = () => {
     setModeView();
+  }
+
+  //onChange functions
+
+  const itemNumberOnChange = (e) =>{
+    setItemNumber(e.target.value);
   }
 
   const chooseDisplayMode = () => {
@@ -78,33 +93,49 @@ function ItemMaster({ setSelectedCat }) {
       <div className="item-master">
       <div className="row">
           <span>Item #:</span>
-          <input type="text" />
+          <input type="text" value={itemNumber} onChange={itemNumberOnChange}/>
         </div>
         <div className="row">
           <span>Item Name:</span>
-          <input type="text" />
+          <input type="text" value={name} />
         </div>
         <div className="row">
           <span>Item Description:</span>
-          <input type="text-box" />
+          <input type="text-box" value={description}/>
         </div>
         <div className="row">
           <span>Type: </span>
-          <span>Stock</span>
+          <select defaultValue={type}>
+            <option selected>Stock</option>
+            <option value="dropship">Dropship</option>
+            <option value="variable">Variable</option>
+          </select>
         </div>
         <div className="row">
           <span>Item Status: </span>
+          <select defaultValue={status}>
+            <option selected value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
         <div className="row">
           <span>Cost:</span>
-          <input type="number" />
+          <input type="number" value={cost} />
         </div>
         <div className="row">
           <span>Price:</span>
-          <input type="number" />
+          <input type="number" value={price} />
+        </div>
+        <div className="row">
+          <span>Taxable?</span>
+          <input type="checkbox" value={taxable} />
         </div>
         <div className="row">
           <span>Webstore Status: </span>
+          <select defaultValue={webstoreStatus}>
+            <option value="active">Active</option>
+            <option selected value="inactive">Inactive</option>
+          </select>
 
         </div>
         <div className="row">
@@ -121,33 +152,45 @@ function ItemMaster({ setSelectedCat }) {
       <div className="item-master">
       <div className="row">
           <span>Item #:</span>
-          <input type="text" />
+          <input type="text" value={itemNumber}/>
         </div>
         <div className="row">
           <span>Item Name:</span>
-          <input type="text" />
+          <input type="text" value={name} />
         </div>
         <div className="row">
           <span>Item Description:</span>
-          <input type="text-box" />
+          <input type="text-box" value={description}/>
         </div>
         <div className="row">
           <span>Type: </span>
-          <span>Stock</span>
+          <select defaultValue={type}>
+            <option selected>Stock</option>
+            <option value="dropship">Dropship</option>
+            <option value="variable">Variable</option>
+          </select>
         </div>
         <div className="row">
           <span>Item Status: </span>
+          <select defaultValue={status}>
+            <option selected value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
         <div className="row">
           <span>Cost:</span>
-          <input type="number" />
+          <input type="number" value={cost} />
         </div>
         <div className="row">
           <span>Price:</span>
-          <input type="number" />
+          <input type="number" value={price} />
         </div>
         <div className="row">
           <span>Webstore Status: </span>
+          <select defaultValue={webstoreStatus}>
+            <option value="active">Active</option>
+            <option selected value="inactive">Inactive</option>
+          </select>
 
         </div>
         <div className="row">

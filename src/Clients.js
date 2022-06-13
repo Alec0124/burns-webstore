@@ -25,11 +25,11 @@ function Clients({ setSelectedCat }) {
   }
 
   const chooseDisplayMode = () => {
-    if(mode === 'view') {
+    if (mode === 'view') {
       return displayViewMode();
-    } else if(mode === 'create') {
+    } else if (mode === 'create') {
       return displayCreateMode();
-    } else if(mode === 'edit') {
+    } else if (mode === 'edit') {
       return displayEditMode();
     }
   }
@@ -37,7 +37,7 @@ function Clients({ setSelectedCat }) {
   const displayViewMode = () => {
     return (
       <div className="item-master">
-      <div className="row">
+        <div className="row">
           <span>Client Id: </span>
           <input type="text" />
           <img className='search-icon' src={search} alt="Search Button" />
@@ -82,93 +82,109 @@ function Clients({ setSelectedCat }) {
           <button className='inactive'>Save</button>
 
         </div>
-        </div>
+      </div>
     )
   }
   const displayCreateMode = () => {
     return (
       <div className="item-master">
-      <div className="row">
-          <span>Item #:</span>
+        <div className="row">
+          <span>Client Id: </span>
           <input type="text" />
+          <img className='search-icon' src={search} alt="Search Button" />
         </div>
         <div className="row">
-          <span>Item Name:</span>
-          <input type="text" />
+          <span>First Name: </span>
         </div>
         <div className="row">
-          <span>Item Description:</span>
-          <input type="text-box" />
+          <span>Last Name: </span>
         </div>
         <div className="row">
-          <span>Type: </span>
-          <span>Stock</span>
+          <span>Email Address: </span>
         </div>
         <div className="row">
-          <span>Item Status: </span>
+          <span>Address 1: </span>
         </div>
         <div className="row">
-          <span>Cost:</span>
-          <input type="number" />
+          <span>Address 2: </span>
         </div>
         <div className="row">
-          <span>Price:</span>
-          <input type="number" />
+          <span>Address 3: </span>
         </div>
         <div className="row">
-          <span>Webstore Status: </span>
+          <span>City: </span>
+        </div>
+        <div className="row">
+          <span>State: </span>
+        </div>
+        <div className="row">
+          <span>Zip Code: </span>
+        </div>
+        <div className="row">
+          <span>Phone Number: </span>
+        </div>
+        <div className="row">
+          <span>Alt. Phone Number: </span>
+        </div>
 
-        </div>
         <div className="row">
-          <button className='inactive'>Create New Item</button>
+          <button className='inactive' >Create New Client Record</button>
           <button className='inactive'>Edit</button>
           <button onClick={onClickSave}>Save</button>
 
         </div>
-        </div>
+      </div>
     )
   }
   const displayEditMode = () => {
     return (
       <div className="item-master">
-      <div className="row">
-          <span>Item #:</span>
+        <div className="row">
+          <span>Client Id: </span>
           <input type="text" />
+          <img className='search-icon' src={search} alt="Search Button" />
         </div>
         <div className="row">
-          <span>Item Name:</span>
-          <input type="text" />
+          <span>First Name: </span>
         </div>
         <div className="row">
-          <span>Item Description:</span>
-          <input type="text-box" />
+          <span>Last Name: </span>
         </div>
         <div className="row">
-          <span>Type: </span>
-          <span>Stock</span>
+          <span>Email Address: </span>
         </div>
         <div className="row">
-          <span>Item Status: </span>
+          <span>Address 1: </span>
         </div>
         <div className="row">
-          <span>Cost:</span>
-          <input type="number" />
+          <span>Address 2: </span>
         </div>
         <div className="row">
-          <span>Price:</span>
-          <input type="number" />
+          <span>Address 3: </span>
         </div>
         <div className="row">
-          <span>Webstore Status: </span>
+          <span>City: </span>
+        </div>
+        <div className="row">
+          <span>State: </span>
+        </div>
+        <div className="row">
+          <span>Zip Code: </span>
+        </div>
+        <div className="row">
+          <span>Phone Number: </span>
+        </div>
+        <div className="row">
+          <span>Alt. Phone Number: </span>
+        </div>
 
-        </div>
         <div className="row">
-          <button className='inactive'>Create New Item</button>
+          <button className='inactive' >Create New Client Record</button>
           <button className='inactive'>Edit</button>
           <button onClick={onClickSave}>Save</button>
 
         </div>
-        </div>
+      </div>
     )
   }
 
