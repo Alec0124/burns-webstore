@@ -133,6 +133,19 @@
   .search-icon:hover {
     background-color: darkcyan;
   }
+  .Loading {
+    position: absolute;
+    top: 250px;
+    left: 500px;
+    width: 400px;
+    height: 100px;
+    background-color: lightblue;
+    color: black;
+    border: 2px solid black;
+    text-align: center;
+    padding-top: 70px;
+    font-size: 24pt;
+  }
 }
 
 /* Large screens ----------- */

@@ -1,5 +1,6 @@
 import search from './images/search.png'
 import { useState } from 'react';
+import Loading from './Loading'
 
 function ItemMaster({ setSelectedCat }) {
 
@@ -13,9 +14,16 @@ function ItemMaster({ setSelectedCat }) {
   const [status, setStatus] = useState("active");
   const [type, setType] = useState('stock');
   const [webstoreStatus, setWebstoreStatus] = useState("inactive");
+  const [isLoading, setIsLoading] = useState(false);
 
   const setModeCreate = () => {
     setMode("create");
+  }
+  const setIsLoadingTrue = () => {
+    setIsLoading(true);
+  }
+  const setIsLoadingFalse = () => {
+    setIsLoading(false);
   }
   const onClickCreate = () => {
     setModeCreate();
@@ -29,15 +37,63 @@ function ItemMaster({ setSelectedCat }) {
   const setModeView = () => {
     setMode("view");
   }
+  const setIsLoadingFalseAsync = () => {
+    setTimeout(()=>{
+      setIsLoadingFalse();
+    }, 2000);
+  }
   const onClickSave = () => {
-    setModeView();
+    //see if item# exists
+    // fetch()
+    //add new item to db
+    //return to view item
+     setModeView();
   }
 
   //onChange functions
 
   const itemNumberOnChange = (e) =>{
     setItemNumber(e.target.value);
+  };
+  const nameOnChange = (e) =>{
+    setName(e.target.value);
+  };
+  const descriptionOnChange = (e) =>{
+    setDescription(e.target.value);
+  };
+  const costOnChange = (e) =>{
+    setCost(e.target.value);
+  };
+  const priceOnChange = (e) =>{
+    setPrice(e.target.value);
+  };
+  const taxableOnChange = (e) =>{
+    setTaxable(e.target.value);
+  };
+  const statusOnChange = (e) =>{
+    setStatus(e.target.value);
+  };
+  const typeOnChange = (e) =>{
+    setType(e.target.value);
+  };
+  const webstoreStatusOnChange = (e) =>{
+    setWebstoreStatus(e.target.value);
+  };
+// end of onChange functions
+
+// helper functions
+
+const displayLoading = (isLoading) => {
+  if(isLoading) {
+    return (
+      <Loading />
+    )
+  } else {
+    return
   }
+}
+
+// displays
 
   const chooseDisplayMode = () => {
     if(mode === 'view') {
@@ -48,7 +104,7 @@ function ItemMaster({ setSelectedCat }) {
       return displayEditMode();
     }
   }
-
+//      VIEW MODE   //
   const displayViewMode = () => {
     return (
       <div className="item-master">
@@ -88,6 +144,7 @@ function ItemMaster({ setSelectedCat }) {
         </div>
     )
   }
+  //    CREATE MODE     //
   const displayCreateMode = () => {
     return (
       <div className="item-master">
@@ -97,15 +154,15 @@ function ItemMaster({ setSelectedCat }) {
         </div>
         <div className="row">
           <span>Item Name:</span>
-          <input type="text" value={name} />
+          <input type="text" value={name} onChange={nameOnChange} />
         </div>
         <div className="row">
           <span>Item Description:</span>
-          <input type="text-box" value={description}/>
+          <input type="text-box" value={description} onChange={descriptionOnChange}/>
         </div>
         <div className="row">
           <span>Type: </span>
-          <select defaultValue={type}>
+          <select defaultValue={type} onChange={typeOnChange}>
             <option selected>Stock</option>
             <option value="dropship">Dropship</option>
             <option value="variable">Variable</option>
@@ -113,26 +170,26 @@ function ItemMaster({ setSelectedCat }) {
         </div>
         <div className="row">
           <span>Item Status: </span>
-          <select defaultValue={status}>
+          <select defaultValue={status} onChange={statusOnChange}>
             <option selected value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
         </div>
         <div className="row">
           <span>Cost:</span>
-          <input type="number" value={cost} />
+          <input type="number" value={cost} onChange={costOnChange} />
         </div>
         <div className="row">
           <span>Price:</span>
-          <input type="number" value={price} />
+          <input type="number" value={price} onChange={priceOnChange}/>
         </div>
         <div className="row">
           <span>Taxable?</span>
-          <input type="checkbox" value={taxable} />
+          <input type="checkbox" value={taxable} onChange={taxableOnChange}/>
         </div>
         <div className="row">
           <span>Webstore Status: </span>
-          <select defaultValue={webstoreStatus}>
+          <select defaultValue={webstoreStatus} onChange={webstoreStatusOnChange}>
             <option value="active">Active</option>
             <option selected value="inactive">Inactive</option>
           </select>
@@ -172,22 +229,22 @@ function ItemMaster({ setSelectedCat }) {
         </div>
         <div className="row">
           <span>Item Status: </span>
-          <select defaultValue={status}>
+          <select defaultValue={status} onChange={statusOnChange}>
             <option selected value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
         </div>
         <div className="row">
           <span>Cost:</span>
-          <input type="number" value={cost} />
+          <input type="number" value={cost} onChange={costOnChange} />
         </div>
         <div className="row">
           <span>Price:</span>
-          <input type="number" value={price} />
+          <input type="number" value={price} onChange={priceOnChange} />
         </div>
         <div className="row">
           <span>Webstore Status: </span>
-          <select defaultValue={webstoreStatus}>
+          <select defaultValue={webstoreStatus} onChange={webstoreStatusOnChange}>
             <option value="active">Active</option>
             <option selected value="inactive">Inactive</option>
           </select>
@@ -208,6 +265,7 @@ function ItemMaster({ setSelectedCat }) {
   return (
     <div className="admin-body">
       {chooseDisplayMode()}
+      {displayLoading(isLoading)}
     </div>
   );
 }
