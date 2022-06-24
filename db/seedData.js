@@ -62,6 +62,10 @@ async function createTables() {
     description VARCHAR(255),
     cost FLOAT(12),
     price FLOAT(12),
+    status VARCHAR(255),
+    "webstoreStatus" VARCHAR(255),
+    type VARCHAR(255),
+    taxable BOOLEAN,
     "onHand" INT,
     allocated INT
   );`);
@@ -188,7 +192,7 @@ async function createInitialItems() {
 // };
 
 async function createInitialOrders() {
-  console.log('Starting to create items...');
+  console.log('Starting to create orders...');
   try {
     // itemNumber, description, name, cost, price, onHand
     const ordersToCreate = [
@@ -279,7 +283,7 @@ async function createInitialItemCategories() {
 
 async function rebuildDB() {
   try {
-    client.connect();
+    // client.connect();
     await dropTables();
     await createTables();
     await createInitialUsers();

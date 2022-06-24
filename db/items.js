@@ -4,14 +4,13 @@ const { testFirstRow, getNestedTable, deleteReferencedTable } = require("./api")
 const { getItemCategoriesByItem } = require("./itemCategories");
 
 //creates new item row in DB
-const createItem = async ({ itemNumber, description, name, cost, price, onHand }) => {
+const createItem = async ({ itemNumber, description, name, cost, price, onHand, status, type, webstoreStatus }) => {
 
     try {
-
-        const { rows } = await client.query(`INSERT INTO items("itemNumber", "description", name, cost, price, "onHand")
-                VALUES ($1, $2, $3, $4, $5, $6)
+        const { rows } = await client.query(`INSERT INTO items("itemNumber", "description", name, cost, price, "onHand", status, type, "webstoreStatus")
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 ON CONFLICT ("itemNumber") DO NOTHING 
-                RETURNING *;`, [itemNumber.toUpperCase(), description, name, cost, price, onHand]);
+                RETURNING *;`, [itemNumber.toUpperCase(), description, name, cost, price, onHand, status, type, webstoreStatus]);
         testFirstRow(rows);
         return rows[0];
     }
@@ -48,6 +47,7 @@ const getItemById = async (id) => {
 //return item object in database by itemNumber
 const getItemByItemNumber = async (itemNumber) => {
     try {
+        console.log(itemNumber);
         const draftItem = await getNestedTable('items', '"itemNumber"', 'categories', getItemCategoriesByItem, itemNumber)[0];
         draftItem.categories = draftItem.categories.map(async (categoryItem) => {
             return await getCategoryById(categoryItem.categoryId);

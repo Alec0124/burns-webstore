@@ -19,6 +19,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const orders = require('./db/orders');
+// const { rebuildDB } = require('./db/seedData');
+
+// rebuildDB();
  
 
 server.use(cors());
@@ -188,13 +191,13 @@ usersRouter.post('/login', requireUsername, requirePassword, async (req, res, ne
         res.send({ message: 'Login user success!', user, token });
         next();
     }
-    catch ({ name, message }) {
-        next({ name, message })
+    catch (error) {
+        next(error);
     }
 
 });
 
-// GET /api/users (**Admin)
+// GET /api/users 
 //returns all users but without passwords
 usersRouter.get('', async (req, res, next) => {
 
@@ -202,12 +205,8 @@ usersRouter.get('', async (req, res, next) => {
 
         const users = await getAllUsers();
         if (users.length < 1) {
-            throw {
-                name: 'error_noRows',
-                error: 'no rows were returned from getAllUsers query',
-                message: 'no rows were returned from getAllUsers query'
-            };
-        }
+            throw new Error('no rows were returned from getAllUsers query');
+        };
 
         res.send(users);
         next();
@@ -218,6 +217,27 @@ usersRouter.get('', async (req, res, next) => {
     }
 
 });
+// GET /api/users 
+//returns all users but without passwords
+usersRouter.get('/:username', async (req, res, next) => {
+
+    try {
+        const username = req.params.username;
+        const users = await getUserByUsername(username);
+        if (users.length < 1) {
+            throw new Error('no rows were returned from getAllUsers query');
+        };
+
+        res.send(users);
+        next();
+    }
+    catch ({ name, message }) {
+        res.send({name, message});
+        next({ name, message })
+    }
+
+});
+
 
 // PATCH /api/users/:userId
 //updated user row **admin** or **owner**
@@ -415,24 +435,21 @@ ordersRouter.get('', verifyToken, async (req, res, next) => {
 itemsRouter.post('', verifyToken, async (req, res, next) => {
 
     if (!req.user.admin) {
-        throw {
-            name: 'error_requireAdmin',
-            error: 'must use token of admin user',
-            message: 'must use token of admin user'
-        };
+        throw new Error('must use token of admin user');
     };
-    const { itemNumber, description, name, cost, price } = req.body;
+    const { itemNumber, description, name, cost, price, status, webstoreStatus, type } = req.body;
     // requires all fields
     if (typeof (itemNumber) !== 'string') {
         throw respError('itemNumber', 'itemNumber is missing or invalid');
     }
     if (typeof (description) !== 'string' || typeof (name) !== 'string' ||
-        typeof (cost) !== 'number' || typeof (price) !== 'number') {
+        typeof (cost) !== 'number' || typeof (price) !== 'number' || typeof(status) !== 'string' || 
+        typeof(webstoreStatus) !== 'string' || typeof(type) !== 'string') {
         throw respError('missingData', 'body is missing required values');
     }
     try {
 
-        const result = await createItem({ itemNumber, description, name, cost, price });
+        const result = await createItem({ itemNumber, description, name, cost, price, status, webstoreStatus, type });
 
         res.send(result);
         next();
@@ -464,15 +481,36 @@ itemsRouter.get('', verifyToken, async (req, res, next) => {
 
 });
 
-//GET api/items/:itemId (public command)
+//GET api/items/id/:itemId (public command)
 //returns item object
 //only return cost if admin token is passed in - NEEDS TO BE IMPLEMENTED
-itemsRouter.get('/:itemId', verifyToken, async (req, res, next) => {
+itemsRouter.get('/id/:itemId', verifyToken, async (req, res, next) => {
 
     const { itemId } = req.params;
 
     try {
         const item = await getItemById(Number(itemId));
+        if (!req.user.admin) {
+            delete item.cost
+        };
+        res.send(item);
+        next();
+    }
+    catch ({ name, message }) {
+        next({ name, message })
+    }
+
+});
+
+//GET api/items/itemNumber/:itemNumber (public command)
+//returns item object
+//only return cost if admin token is passed in - NEEDS TO BE IMPLEMENTED
+itemsRouter.get('/itemNumber/:itemNumber', verifyToken, async (req, res, next) => {
+
+    const { itemNumber } = req.params;
+
+    try {
+        const item = await getItemByItemNumber(itemNumber.toUpperCase());
         if (!req.user.admin) {
             delete item.cost
         };

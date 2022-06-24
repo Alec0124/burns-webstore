@@ -146,6 +146,43 @@
     padding-top: 70px;
     font-size: 24pt;
   }
+  .search-dropdown {
+    position: absolute;
+    background-color: white;
+    margin-top: 25px;
+    margin-left: 50px;
+    width: 150px;
+    text-align: left;
+    border: 1px solid black;
+  }
+  .search-dropdown-row {
+    padding: 5px;
+  }
+  .search-dropdown-row:hover {
+    background-color: blue;
+  }
+  .list-exchange {
+    position: absolute;
+    width: 800px;
+    height: 400px;
+    background-color: lightblue;
+    color: black;
+    border: 2px solid black;
+    text-align: center;
+    font-size: 18pt;
+    display: flex;
+    flex-flow: row nowrap;
+  }
+  .category-selected, .category-list {
+    border: 1px solid navy;
+    flex: 1 0 200px;
+  }
+  .category-list > .row:hover {
+    background-color: green;
+  }
+  .category-selected > .row:hover {
+    background-color: red;
+  }
 }
 
 /* Large screens ----------- */

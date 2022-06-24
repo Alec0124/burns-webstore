@@ -98,6 +98,8 @@ const getNestedTable = async (firstTableName, firstTableRefId, secondTableKey, r
   return result;
 };
 
+//////  i dont like above   ///////
+
 const insertQueryValuesString = (objectsArray, tableName) => {
   /*
   {
