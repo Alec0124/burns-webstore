@@ -4,7 +4,7 @@ import { fetchLogin } from './api';
 
 
 
-const Login = () => {
+const Login = ({user, setUser}) => {
 
     //states
     const [username, setUsername] = useState();
@@ -20,37 +20,41 @@ const Login = () => {
     const onClickCheckCookie = (e) => {
         console.log(localStorage.getItem('user'));
     };
+
     const onClickLogin = async (e) => {
         e.preventDefault();
         try {
             //is user in DB
             const user = await getUserByUsername(username);
-            if(user===undefined) {
+            if (user === undefined) {
                 throw new Error("user is undefined, something went wrong with fetch");
             }
-            console.log("user", user)
-            if(user===null || user===undefined) {
+            if (user === null || user === undefined) {
                 throw new Error("could not locate user");
             };
-            //if yes, is the password correct?
-            const isPasswordGood = await fetchLogin(username, password);
-            console.log(isPasswordGood);
-            if (!isPasswordGood) {
-                throw new Error("password did not match.")
-            };
+            const response = await fetchLogin(username, password);
             //create cookie with user info
-            delete user.password;
-            await addUserCookie(JSON.stringify(user));
-            console.log("user: ", user);
+            if(!response || !response.user || !response.token) {
+                throw new Error("resp failed in fetchLogin");
+            };
+            response.user.token = response.token;
+            await storeUserObject(response.user);
+            console.log("user: ", response.user);
         }
         catch (error) { throw error }
     };
+    const storeUserObject = async (userObject) => {
+        try {
+            if (typeof (userObject) !== 'object') {
+                throw new Error('expected object type of parmeter, error');
+            };
+            localStorage.setItem('user', JSON.stringify(userObject));
+            setUser(userObject);
+            console.log('stored user: ', userObject);
+        }
+        catch(error) {throw error}
 
-    // cookies
-    const addUserCookie = async (user) => {
-        localStorage.setItem("user", user);
     };
-
 
 
     return (<div className="Login">

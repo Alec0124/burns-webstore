@@ -7,7 +7,6 @@ const createUser = async ({ username, password, email, firstName,
     lastName, phoneNumber, address, address2, zip, state }) => {
 
     try {
-        console.log('createUser parameters: ', 'username: ', username, "password:", password)
         // const SALT_COUNT = 10;
         const [valuesArray, queryString] = insertQueryValuesString(
             [{
@@ -62,10 +61,8 @@ const createUser = async ({ username, password, email, firstName,
             }],
             "users" //this is the table name
         );
-        console.log('insert query values string:', valuesArray, queryString)
         const { rows } = await client.query(queryString, valuesArray);
         testFirstRow(rows);
-        console.log('finished making user: ', rows);
         delete rows[0].password;
         return rows[0];
         //Would also like to do nothing on conflict with email; but haven't figured out how to work it.
@@ -73,7 +70,6 @@ const createUser = async ({ username, password, email, firstName,
     }
 
     catch (error) {
-        console.error('error creating user..', error);
         throw error;
     }
 };
@@ -84,11 +80,10 @@ const updateUser = async ({ id, admin, firstName, lastName, email, phoneNumber, 
     const verifyValue = (value, type = 'string', name) => {
         if (type === null) { type = 'string' };
         if (typeof (value) === type) {
-            console.log('typeOf ', value, '=== ', type, 'is: true')
             dynamicArray.push(value);
             dynamicArrayNames.push(name);
         } else {
-            console.log('typeOf ', value, '=== ', type, 'is: false')
+
         }
     };
     const _ = null;
@@ -154,13 +149,12 @@ const loginUser = async ({ username, password }) => {
             delete rows[0].password;
             return rows[0];
         } else {
-            throw { name: 'PASSWORD_FAIL', message: 'Password is incorrect', error: 'Password is incorrect' };
+            throw new Error({ name: 'PASSWORD_FAIL', message: 'Password is incorrect', error: 'Password is incorrect' });
         }
 
     }
 
     catch (error) {
-        console.error('error getting User w/ password check..', error);
         throw error;
     }
 };

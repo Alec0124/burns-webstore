@@ -1,8 +1,11 @@
+import { useEffect } from "react";
 
 
 const GeneralAdmin = ({setSelectedCat}) => {
 
+    useEffect(()=>{
       setSelectedCat('general');
+    },[])
 
     return (
         <div className="admin-body">

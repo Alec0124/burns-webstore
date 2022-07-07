@@ -50,8 +50,11 @@ async function fetchLogin(username, password) {
               password: password
       })
   })
-      .then(response => response.json())
+      .then(response => {
+        return response.json()
+        })
       .then(result => {
+          console.log('fetch login result',result);
           return result;
       })
       .catch(console.error)
@@ -79,7 +82,7 @@ const fetchMyOrders = async (user) => {
       {
           headers: {
               "Content-Type": "application/json",
-              "Authorization": "Bearer " + user.token
+              "authorization": "Bearer " + user.token
           }
       }
   );
@@ -94,7 +97,7 @@ const fetchUsers = async () => {
                 "Content-Type": "application/json"
             }
         });
-        console.log(resp);
+        // console.log(resp);
         const users = resp.json();
         if(users===null) {
             respError("USERS_NULL", "Could not retrieve users")
@@ -119,9 +122,18 @@ const getUserByUsername = async (username) => {
 };
 
 //Item Functions
-const getAllItems = async () => {
+const getAllItems = async (token) => {
     try {
-        const allItemsJson = await fetch(`${BASE_URL}/items`);
+        if(!token) {
+            throw new Error('missing token');
+        }
+        const allItemsJson = await fetch(`${BASE_URL}/items`, {
+            method: "GET",
+            headers: {
+                "Content-Type":"application/json",
+                "authorization":`Bearer ${token}`
+            }
+        });
         const allItems = await allItemsJson.json();
         localStorage.setItem('allItems', JSON.stringify(allItems));
         return allItems;
@@ -149,7 +161,7 @@ const getItemByItemNumber = async (itemNumber) => {
         const input = itemNumber.toUpperCase();
         const resultJson = await fetch(`${BASE_URL}/items/itemNumber/${input}`);
         const result = resultJson.json();
-        console.log("getItemNumber result: ", result);
+        // console.log("getItemNumber result: ", result);
         return result;
     }
     catch (error) {
@@ -157,12 +169,14 @@ const getItemByItemNumber = async (itemNumber) => {
     }
 };
 
-const createItem = async ({itemNumber, name, description, cost, price, status, webstoreStatus, type, taxable, categories}) => {
+const createItem = async (token, {itemNumber, name, description, cost, price, status, webstoreStatus, type, taxable, categories}) => {
     try {
+        // console.log('running createItem...', itemNumber);
         const resultJson = await fetch(`${BASE_URL}/items`, {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 itemNumber, name, description, cost, price, status, webstoreStatus, type, taxable
@@ -173,6 +187,45 @@ const createItem = async ({itemNumber, name, description, cost, price, status, w
     }
     catch (error) {
         throw error;
+    }
+};
+const updateItem = async (token, {itemId, name, description, cost, price, status, webstoreStatus, type, taxable}) => {
+    try {
+        // console.log('running updateItem...');
+        // console.log(token, itemId, name, description, cost, price, status, webstoreStatus, type, taxable)
+        //backend does not want itemNumber but the item id instead.
+        const resultJson = await fetch(`${BASE_URL}/items/${itemId}`, {
+            method: "PATCH",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                name, description, cost, price, status, webstoreStatus, type, taxable
+            })
+        });
+        const result = resultJson.json();
+        return result;
+    }
+    catch (error) {
+        throw error;
+    }
+};
+
+const removeItem = async (token, id) => {
+    try {
+    const result = await fetch(`${BASE_URL}/items/${id}`, {
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': `Bearer ${token}`
+        }
+    });
+    const finalResult = await result.json()
+    return finalResult;
+    }
+    catch (error) {
+        throw error
     }
 }
 
@@ -186,5 +239,7 @@ module.exports = {
     getItemByItemNumber,
     getAllCategories,
     createItem,
-    getUserByUsername
+    getUserByUsername,
+    updateItem,
+    removeItem
 };

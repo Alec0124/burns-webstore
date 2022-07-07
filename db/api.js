@@ -1,8 +1,11 @@
 const { client } = require('./client');
 const testFirstRow = rows => {
+  try {
   if (!rows[0]) {
-    throw respError('notFound', 'could not find queried row');
+    throw new Error('could not find queried row');
   }
+}
+catch (error) { throw error}
 };
 const respError = (name, message) => {
   return {
@@ -21,7 +24,9 @@ const getQueryValuesString = (objectsArray, id) => {
   let dynamicArrayNames = [];
   let queryValuesString = `SET `;
   objectsArray.forEach(object => {
+    console.log('testing: ', object);
     if (typeof (object.value) === object.type) {
+      console.log("pass");
       dynamicArray.push(object.value);
       dynamicArrayNames.push(object.name);
     };
@@ -29,10 +34,10 @@ const getQueryValuesString = (objectsArray, id) => {
   if (dynamicArray.length < 1) {
     throw respError('error_noInputValues', 'missing input values for database');
   };
-  queryValuesString = queryValuesString + `${dynamicArrayNames[0]}=${dynamicArray[0]}`;
+  queryValuesString = queryValuesString + `${dynamicArrayNames[0]}=$1`;
   if (dynamicArray.length > 1) {
     for (let i = 1; dynamicArray.length > i; i++) {
-      queryValuesString = queryValuesString + `, ${dynamicArrayNames[i]}=${dynamicArray[i]}`;
+      queryValuesString = queryValuesString + `, ${dynamicArrayNames[i]}=$${String(i+1)}`;
     };
   };
   queryValuesString = queryValuesString + ` WHERE id=${id} RETURNING *;`;
@@ -40,16 +45,20 @@ const getQueryValuesString = (objectsArray, id) => {
   return [dynamicArray, queryValuesString];
 };
 
-const deleteReferencedTable = async ({ topTable, bottomTable, referenceName, id }) => {
-  const deletedBottomRows = await client.query(`DELETE FROM $1  
-    WHERE id=($2) 
-    RETURNING *;`, [bottomTable, id]).rows;
-  const deletedTopRow = await client.query(`DELETE FROM $1  
-    WHERE $2=($3) 
-    RETURNING *;`, [topTable, referenceName, id]).rows;
+const deleteReferencedTable = async ( topTable, bottomTable, referenceName, id ) => {
+  const deletedBottomRows = await client.query(`DELETE FROM ${bottomTable}  
+  WHERE $2=($3) 
+  RETURNING *;`, [bottomTable, referenceName, id]).rows;
+  const deletedTopRow = await client.query(`DELETE FROM ${topTable}  
+  WHERE id=($2) 
+  RETURNING *;`, [topTable, id]).rows;
   deletedTopRow[bottomTable] = deletedBottomRows;
   return deletedTopRow;
 
+};
+const deleteTableRow = async (tableName, column, value) => {
+  const deletedRow = await client.query(`DELETE FROM "${tableName}" WHERE "${column}"=${value} RETURNING *;`);
+  return deletedRow.rows[0]
 };
 
 // searches firstTableName where firstTableRefId == id; then uses readSecondTable with id of each row in fristTable.
@@ -58,14 +67,12 @@ const getNestedTable = async (firstTableName, firstTableRefId, secondTableKey, r
   console.log('running getNestedTable...')
   let queryString;
   let valuesArray;
-  console.log(firstTableRefId, typeof(firstTableRefId));
-  console.log(id, typeof(id));
+
   if (typeof (firstTableRefId) !== 'string' || typeof (id) !== 'number') {
     console.log('tableRef and/or id not found!!!');
     queryString = `SELECT * FROM ${firstTableName};`
     valuesArray = [firstTableName];
   } else {
-    console.log(`selecting * from ${firstTableName} where ${firstTableRefId} == ${id}`);
     queryString = `SELECT * FROM ${firstTableName} WHERE ${firstTableRefId}=(${id});`
     valuesArray = [];
   };
@@ -75,19 +82,13 @@ const getNestedTable = async (firstTableName, firstTableRefId, secondTableKey, r
 
   const myMapFunction = async (secondTableKey, readSecondTable) => {
     return async (firstTableRow) => {
-      console.log('firstTableRow.id: ', firstTableRow.id);
-      console.log('read function: ', readSecondTable);
       const data = await readSecondTable(firstTableRow.id);
-      console.log('readSecondTable: ', data);
       const result = { ...firstTableRow };
       if ( !data ) {
-        console.log('data.rows false')
         result[secondTableKey] = [];  
       } else {
-        console.log('data.rows true')
         result[secondTableKey] = data;
       };
-      console.log("nested result: ",  result)
       return result;
     }
   };
@@ -109,13 +110,11 @@ const insertQueryValuesString = (objectsArray, tableName) => {
   let dynamicArray = [];
   let dynamicArrayNames = [];
   let queryValuesString = `INSERT INTO  ${tableName}(`;
-  console.log('objectsArray: ', objectsArray)
   objectsArray.forEach(object => {
     if (typeof (object.value) === object.type) {
       dynamicArray.push(object.value);
       dynamicArrayNames.push(object.name);
     } else {
-      console.log('failed to push: ', object)
     }
   });
   if (dynamicArray.length < 1) {
@@ -144,5 +143,6 @@ module.exports = {
   getQueryValuesString,
   getNestedTable,
   deleteReferencedTable,
-  insertQueryValuesString
+  insertQueryValuesString,
+  deleteTableRow
 }

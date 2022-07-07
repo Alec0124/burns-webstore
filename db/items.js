@@ -1,6 +1,6 @@
 const { getCategoryById } = require("./categories");
 const { client } = require("./client");
-const { testFirstRow, getNestedTable, deleteReferencedTable } = require("./api");
+const { testFirstRow, getNestedTable, getQueryValuesString ,deleteReferencedTable, deleteTableRow } = require("./api");
 const { getItemCategoriesByItem } = require("./itemCategories");
 
 //creates new item row in DB
@@ -28,7 +28,6 @@ const getItemById = async (id) => {
 
         const promisedDraftItem = await getNestedTable('items', 'id', 'categories', getItemCategoriesByItem, Number(id));
         const draftItem = await Promise.all(promisedDraftItem);
-        console.log('draftItem: ', draftItem);
         if (!!draftItem.categories) {
             draftItem.categories = draftItem.categories.map(async (categoryItem) => {
                 return await getCategoryById(categoryItem.categoryId);
@@ -47,7 +46,6 @@ const getItemById = async (id) => {
 //return item object in database by itemNumber
 const getItemByItemNumber = async (itemNumber) => {
     try {
-        console.log(itemNumber);
         const draftItem = await getNestedTable('items', '"itemNumber"', 'categories', getItemCategoriesByItem, itemNumber)[0];
         draftItem.categories = draftItem.categories.map(async (categoryItem) => {
             return await getCategoryById(categoryItem.categoryId);
@@ -70,19 +68,15 @@ const getAllItems = async () => {
         const promisedResult = draftItems.map(async draftItem => {
             if (!!draftItem.categories) {
                 const promisedCategories = draftItem.categories.map(async (categoryItem) => {
-                    console.log("categoryItem: ", categoryItem)
                     return await getCategoryById(categoryItem.categoryId);
                     
                 });
-                console.log('promisedCategories: ', promisedCategories);
                 draftItem.categories = await Promise.all(promisedCategories);
             }
-            console.log('draftItem: ', draftItem);
             return draftItem;
         });
         
         const result = await Promise.all(promisedResult);
-        console.log('final allItems: ', result);
         return result;
     }
 
@@ -92,13 +86,55 @@ const getAllItems = async () => {
     }
 };
 //updates an item row by id
-const updateItem = async ({ id, name, description, cost, price, onHand }) => {
-    [valuesArray, queryValuesString] = getQueryValuesString();
-    const valuesArray = [name, description, cost, price, onHand, id]
+const updateItem = async ({ id, name, description, cost, price, status, webstoreStatus, taxable, type }) => {
+    console.log('running updateItem()');
     try {
 
+    const [valuesArray, queryValuesString] = getQueryValuesString([
+        {
+            name: "name",
+            type: "string",
+            value: `${name}`
+        },
+        {
+            name: "description",
+            type: "string",
+            value: `${description}`
+        },
+        {
+            name: "cost",
+            type: "number",
+            value: cost
+        },
+        {
+            name: "price",
+            type: "number",
+            value: price
+        },
+        {
+            name: "status",
+            type: "string",
+            value: `${status}`
+        },
+        {
+            name: '"webstoreStatus"',
+            type: "string",
+            value: `"${webstoreStatus}"`
+        },
+        {
+            name: "taxable",
+            type: "boolean",
+            value: taxable
+        },
+        {
+            name: "type",
+            type: "string",
+            value: type
+        }
+    ], id);
         const { rows } = await client.query(`UPDATE items ${queryValuesString}`, valuesArray);
         testFirstRow(rows);
+        console.log('updated item: ', rows);
         return rows[0];
     }
 
@@ -112,8 +148,11 @@ const updateItem = async ({ id, name, description, cost, price, onHand }) => {
 //deletes item row from DB
 
 const removeItem = async (id) => {
+    console.log('running removeItem id: ', id);
     try {
-        return await deleteReferencedTable('items', '"itemCategories"', '"itemId"', id);
+        // return await deleteReferencedTable('items', '"itemCategories"', '"itemId"', id);
+        await deleteTableRow("itemCategories", "itemId", id);
+        return await deleteTableRow("items", "id", id);
     }
 
     catch (error) {

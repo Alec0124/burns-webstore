@@ -28,7 +28,6 @@ const getLineItemsByOrder = async (id) => {
 
         const { rows } = await client.query(`SELECT * FROM "lineItems" 
         WHERE "orderId"=($1);`, [id]);
-        console.log("lines items of order: ", rows);
         return rows;
     }
 
@@ -68,8 +67,6 @@ const updateLineItem = async ({ id, quantity, cost, price, name, description }) 
                 type: "string"
             }
         ], id);
-        console.log('UPDATE "lineItems" ' + queryValuesString);
-        console.log(valuesArray);
         const { rows } = await client.query(`UPDATE "lineItems" 
         ${queryValuesString}`);
         testFirstRow(rows);

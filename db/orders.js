@@ -8,7 +8,6 @@ const { getLineItemsByOrder } = require("./lineItems");
 //creates order; line items attached seperately
 const createOrder = async ({ userId, attn, email, phoneNumber, 
     address, address2, zip, state }) => {
-    console.log('creating orders...');
     const [valuesArray, queryString] = insertQueryValuesString([
         {
             name: '"userId"',

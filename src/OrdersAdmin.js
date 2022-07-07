@@ -1,5 +1,6 @@
 import search from './images/search.png'
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 function OrdersAdmin({ setSelectedCat }) {
 
@@ -131,8 +132,9 @@ function OrdersAdmin({ setSelectedCat }) {
         </div>
     )
   }
-
-  setSelectedCat("orders");
+  useEffect(()=>{
+    setSelectedCat("orders");
+  },[])
 
   return (
     <div className="admin-body">

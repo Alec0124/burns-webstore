@@ -1,7 +1,8 @@
 const testDotenv = require('dotenv').config();
 if (testDotenv.error) { console.log(testDotenv.error) }
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = process.env;
+// const { JWT_SECRET } = process.env;
+const JWT_SECRET = 'apples';
 
 const { createUser, loginUser, getAllUsers, client, getUserByUsername, updateUser,
     createOrder, updateOrder, getAllOrders, createLineItem, updateLineItem, deleteOrder, getItemCategoriesByItem,
@@ -22,7 +23,7 @@ const orders = require('./db/orders');
 // const { rebuildDB } = require('./db/seedData');
 
 // rebuildDB();
- 
+
 
 server.use(cors());
 server.use(morgan('dev'));
@@ -78,33 +79,54 @@ function requirePassword(req, res, next) {
 
 
 const verifyToken = async (req, res, next) => {
-    console.log('running token check function...');
-    const prefix = 'Bearer ';
-    const auth = req.header('authorization');
+    try {
+        const prefix = 'Bearer ';
+        const auth = await req.header('authorization');
 
-    if (!auth) { // nothing to see here
-        console.log('auth is missing!!')
-        next();
-    } else if (auth.startsWith(prefix)) {
-        const token = auth.slice(prefix.length);
+        if (!auth) { // nothing to see here
+            res.status(401);
+            res.send('auth token missing');
+        } else if (auth.startsWith(prefix)) {
+            const token = auth.slice(prefix.length);
 
-        try {
-            console.log('token jwt')
+            const verified = jwt.verify(token, JWT_SECRET);
+            console.log('token verifiied: ', verified);
+                next();
+        } else {
+                res.status(401);
+                res.send(`Authorization token must start with ${prefix}`);
+            }
+        }
+    catch (error) {
+        res.send(error);
+    }
+};
+
+const verifyTokenReturn = async (req, res, next) => {
+
+    try {
+        const prefix = 'Bearer ';
+        const auth = req.header('authorization');
+
+        if (!auth) { // nothing to see here
+            throw new Error('auth is missing!!');
+        } else if (auth.startsWith(prefix)) {
+            const token = auth.slice(prefix.length);
             const { id } = jwt.verify(token, JWT_SECRET);
-            console.log('token jwt pass')
             if (id) {
-                req.user = await getUserById(id);
-                console.log('user verified: ', req.user);
+                const user = await getUserById(id);
+                delete user.password;
+                const token = jwt.sign({ id: user.id, username: user.username, exp: Math.floor(Date.now() / 1000) + (60 * 60) }, JWT_SECRET);
+                user.token = token;
+                res.send({ user: user });
                 next();
             }
-        } catch ({ name, message }) {
-            next({ name, message });
+
+        } else {
+            throw new Error(`Authorization token must start with ${prefix}`);
         }
-    } else {
-        next({
-            name: 'AuthorizationHeaderError',
-            message: `Authorization token must start with ${prefix}`
-        });
+    } catch ({ name, message }) {
+        next({ name, message });
     }
 };
 
@@ -146,6 +168,7 @@ apiRouter.get('/health', (req, res, next) => {
 
     res.send({ message: 'server is up and healthy!!!' });
 });
+apiRouter.get('/verify', verifyTokenReturn);
 
 
 // ***users***
@@ -153,18 +176,15 @@ apiRouter.get('/health', (req, res, next) => {
 // Create a new user. Require username and password, and hash password before saving user to DB. Require all passwords to be at least 8 characters long.
 // BROKEN
 usersRouter.post('/register', async (req, res, next) => {
-    console.log('req body: ', req.body);
     const { username, password, admin, firstName, lastName, email, phoneNumber, address, address2, zip, state } = req.body.user;
 
     try {
 
         const _user = await getUserByUsername(username);
-        console.log('_user', _user)
 
         if (!!_user) {
             next(respError('userExistsError', 'A user by that name already exists'));
         };
-        console.log('before createUser: ', "username: ",)
         const user = await createUser({ username, password, admin, firstName, lastName, email, phoneNumber, address, address2, zip, state });
         const token = jwt.sign({ id: user.id, username }, JWT_SECRET, { expiresIn: '1w' });
         res.send({ message: 'register user success!', user, token });
@@ -186,9 +206,9 @@ usersRouter.post('/login', requireUsername, requirePassword, async (req, res, ne
 
         const user = await loginUser({ username, password });
 
-        const token = jwt.sign({ id: user.id, username }, JWT_SECRET, { expiresIn: '1w' });
-
-        res.send({ message: 'Login user success!', user, token });
+        const token = jwt.sign({ id: user.id, username, exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24) }, JWT_SECRET);
+        // const token = 'apple';
+        res.send(JSON.stringify({ message: 'Login user success!', user, token }));
         next();
     }
     catch (error) {
@@ -212,13 +232,12 @@ usersRouter.get('', async (req, res, next) => {
         next();
     }
     catch ({ name, message }) {
-        res.send({name, message});
+        res.send({ name, message });
         next({ name, message })
     }
 
 });
 // GET /api/users 
-//returns all users but without passwords
 usersRouter.get('/:username', async (req, res, next) => {
 
     try {
@@ -232,7 +251,7 @@ usersRouter.get('/:username', async (req, res, next) => {
         next();
     }
     catch ({ name, message }) {
-        res.send({name, message});
+        res.send({ name, message });
         next({ name, message })
     }
 
@@ -243,31 +262,28 @@ usersRouter.get('/:username', async (req, res, next) => {
 //updated user row **admin** or **owner**
 // NOT TESTED
 usersRouter.patch('/:userId', verifyToken, async (req, res, next) => {
+    try {
+        if (!req.user) {
+            throw new Error('must provide a BEARER token');
+        }
+        const id = req.params.userId;
 
-    if (!req.user) {
-        throw {
-            name: 'error_requireToken',
-            error: 'must provide a BEARER token',
-            message: 'must provide a BEARER token'
-        };
-    }
-
-    const id = req.params.userId;
-
-    if (!req.user.admin) {
-        //user is not admin; so if he owner of user?
-        if (req.user.id !== id) {
-            throw {
-                name: 'error_requireAdmin',
-                error: 'must use token of admin user',
-                message: 'must use token of admin user'
+        if (!req.user.admin) {
+            //user is not admin; so if he owner of user?
+            if (req.user.id !== id) {
+                throw new Error('must use token of admin user');
             };
         };
-    };
 
-    const { admin, firstName, lastName, email, phoneNumber, address, address2, zip, state } = req.body;
+    }
+    catch (error) {
+        throw error;
+    }
+
 
     try {
+
+        const { admin, firstName, lastName, email, phoneNumber, address, address2, zip, state } = req.body;
 
         const updatedUser = await updateUser({ id, admin, firstName, lastName, email, phoneNumber, address, address2, zip, state });
 
@@ -286,14 +302,11 @@ usersRouter.patch('/:userId', verifyToken, async (req, res, next) => {
 //creates a new Order; if token provided then assign creator id
 //pass in optional "lineItems" array to have line items added to new order. NOT IMPLEMENTED
 ordersRouter.post('', verifyToken, async (req, res, next) => {
-    console.log('running POST api/orders ...')
     const { attn, email, phoneNumber, address, address2, zip, state, lineItems } = req.body;
     let userId;
     if (!!req.user) {
-        console.log('req.user true');
         userId = req.user.id;
     } else {
-        console.log('req.user false');
         userId = false;
     }
 
@@ -303,7 +316,7 @@ ordersRouter.post('', verifyToken, async (req, res, next) => {
 
         // 
         if (!lineItems || !Array.isArray(lineItems)) {
-            res.send({newOrder});
+            res.send({ newOrder });
             next();
         } else {
             // if there are line items...
@@ -416,7 +429,7 @@ ordersRouter.get('', verifyToken, async (req, res, next) => {
 
         const data = await getAllOrders();
 
-        res.send( data );
+        res.send(data);
         next();
     }
     catch ({ name, message }) {
@@ -434,21 +447,21 @@ ordersRouter.get('', verifyToken, async (req, res, next) => {
 //creates a new item for the item DB; requires a token from an admin user
 itemsRouter.post('', verifyToken, async (req, res, next) => {
 
-    if (!req.user.admin) {
-        throw new Error('must use token of admin user');
-    };
-    const { itemNumber, description, name, cost, price, status, webstoreStatus, type } = req.body;
-    // requires all fields
-    if (typeof (itemNumber) !== 'string') {
-        throw respError('itemNumber', 'itemNumber is missing or invalid');
-    }
-    if (typeof (description) !== 'string' || typeof (name) !== 'string' ||
-        typeof (cost) !== 'number' || typeof (price) !== 'number' || typeof(status) !== 'string' || 
-        typeof(webstoreStatus) !== 'string' || typeof(type) !== 'string') {
-        throw respError('missingData', 'body is missing required values');
-    }
     try {
 
+        // if (!req.user.admin) {
+        //     throw new Error('must use token of admin user');
+        // };
+        const { itemNumber, description, name, cost, price, status, webstoreStatus, type } = req.body;
+        // requires all fields
+        if (typeof (itemNumber) !== 'string') {
+            throw respError('itemNumber', 'itemNumber is missing or invalid');
+        }
+        if (typeof (description) !== 'string' || typeof (name) !== 'string' ||
+            typeof (cost) !== 'number' || typeof (price) !== 'number' || typeof (status) !== 'string' ||
+            typeof (webstoreStatus) !== 'string' || typeof (type) !== 'string') {
+            throw respError('missingData', 'body is missing required values');
+        }
         const result = await createItem({ itemNumber, description, name, cost, price, status, webstoreStatus, type });
 
         res.send(result);
@@ -466,7 +479,7 @@ itemsRouter.post('', verifyToken, async (req, res, next) => {
 itemsRouter.get('', verifyToken, async (req, res, next) => {
     //includes categories
 
-    
+
 
     try {
 
@@ -526,31 +539,27 @@ itemsRouter.get('/itemNumber/:itemNumber', verifyToken, async (req, res, next) =
 // PATCH api/items/:itemId (**admin**)
 //updates an item in the DB
 
-itemsRouter.patch('/:itemId', verifyToken, async (req, res, next) => {                       
-
-    if (!req.user.admin) {
-        throw {
-            name: 'error_requireAdmin',
-            error: 'must use token of admin user',
-            message: 'must use token of admin user'
-        };
-    };
-    const itemId = Number(req.params.itemId);
-    //edge case: NaN id passed through
-    if (typeof (itemId) !== 'number' || itemId === NaN) {
-        respError('itemId_invalid', 'itemId is missing or invalid');
-    };
-    const { name, description, cost, price, onHand } = req.body;
-    const id = itemId;
-
+itemsRouter.patch('/:itemId', verifyToken, async (req, res, next) => {
+    console.log('preparing to run updateItem')
     try {
 
-        const updatedItem = await updateItem({ id, name, description, cost, price, onHand });
+        // if (!req.user.admin) {
+        //     throw new Error('must use token of admin user');
+        // };
+        const itemId = Number(req.params.itemId);
+        //edge case: NaN id passed through
+        if (typeof (itemId) !== 'number' || itemId === NaN) {
+            throw new Error('itemId is missing or invalid');
+        };
+        const { name, description, cost, price, status, webstoreStatus, type, taxable } = req.body;
+        // itemNumber, name, description, cost, price, status, webstoreStatus, type, taxable
+        const id = itemId;
+        const updatedItem = await updateItem({ id, name, description, cost, price, status, webstoreStatus, type, taxable });
         res.send(updatedItem);
         next();
     }
-    catch ({ name, message }) {
-        next({ name, message })
+    catch (error) {
+        next(error)
     }
 
 });
@@ -559,25 +568,21 @@ itemsRouter.patch('/:itemId', verifyToken, async (req, res, next) => {
 //deletes item from DB and all associated line items
 
 itemsRouter.delete('/:itemId', verifyToken, async (req, res, next) => {
-
-    if (!req.user.admin) {
-        throw {
-            name: 'error_requireAdmin',
-            error: 'must use token of admin user',
-            message: 'must use token of admin user'
-        };
-    };
-    const itemId = Number(req.params.itemId);
-    if (typeof (itemId) !== 'number' || itemId === NaN) {
-        throw respError('itemId_invalid', 'itemId is missing or invalid');
-    }
+    
     try {
+        // if (!req.user.admin) {
+        //     throw new Error('must use token of admin user');
+        // };
+        const itemId = Number(req.params.itemId);
+        if (typeof (itemId) !== 'number' || isNaN(itemId) === true) {
+            throw new Error('itemId is missing or invalid');
+        }
         const data = await removeItem(itemId);
-        res.send(data);
+        res.send(JSON.stringify(data));
         next();
     }
-    catch ({ name, message }) {
-        next({ name, message })
+    catch (error) {
+        next(error)
     }
 
 });
@@ -723,10 +728,10 @@ lineItemsRouter.delete('/:lineItemId', verifyToken, async (req, res, next) => {
 
 categoriesRouter.post('', verifyToken, async (req, res, next) => {
 
-    if ( !req.user.admin) {
+    if (!req.user.admin) {
         throw {
-            name: 'error_requireAdmin', 
-            error: 'must use token of admin user', 
+            name: 'error_requireAdmin',
+            error: 'must use token of admin user',
             message: 'must use token of admin user'
         };
     };
@@ -796,10 +801,10 @@ categoriesRouter.get('', async (req, res, next) => {
 
 categoriesRouter.patch('/:categoryId', verifyToken, async (req, res, next) => {
 
-    if ( !req.user.admin) {
+    if (!req.user.admin) {
         throw {
-            name: 'error_requireAdmin', 
-            error: 'must use token of admin user', 
+            name: 'error_requireAdmin',
+            error: 'must use token of admin user',
             message: 'must use token of admin user'
         };
     };
@@ -811,7 +816,7 @@ categoriesRouter.patch('/:categoryId', verifyToken, async (req, res, next) => {
 
     try {
 
-        const updatedCategory = await updateCategory({id, name});
+        const updatedCategory = await updateCategory({ id, name });
 
         res.send(updatedCategory);
         next();
@@ -827,10 +832,10 @@ categoriesRouter.patch('/:categoryId', verifyToken, async (req, res, next) => {
 
 categoriesRouter.delete('/:categoryId', verifyToken, async (req, res, next) => {
 
-    if ( !req.user.admin) {
+    if (!req.user.admin) {
         throw {
-            name: 'error_requireAdmin', 
-            error: 'must use token of admin user', 
+            name: 'error_requireAdmin',
+            error: 'must use token of admin user',
             message: 'must use token of admin user'
         };
     };
@@ -843,7 +848,7 @@ categoriesRouter.delete('/:categoryId', verifyToken, async (req, res, next) => {
 
         const itemCategories = await getItemCategoriesByCategory(id);
 
-        itemCategories.forEach( async itemCategory => {
+        itemCategories.forEach(async itemCategory => {
             await removeItemCategory(itemCategory.id);
         });
 
@@ -865,10 +870,10 @@ categoriesRouter.delete('/:categoryId', verifyToken, async (req, res, next) => {
 
 itemCategoriesRouter.post('', verifyToken, async (req, res, next) => {
 
-    if ( !req.user.admin) {
+    if (!req.user.admin) {
         throw {
-            name: 'error_requireAdmin', 
-            error: 'must use token of admin user', 
+            name: 'error_requireAdmin',
+            error: 'must use token of admin user',
             message: 'must use token of admin user'
         };
     };
@@ -968,10 +973,10 @@ itemCategoriesRouter.get('/:categoryId', async (req, res, next) => {
 
 itemCategoriesRouter.delete('/:itemCategoryId', verifyToken, async (req, res, next) => {
 
-    if ( !req.user.admin) {
+    if (!req.user.admin) {
         throw {
-            name: 'error_requireAdmin', 
-            error: 'must use token of admin user', 
+            name: 'error_requireAdmin',
+            error: 'must use token of admin user',
             message: 'must use token of admin user'
         };
     };
