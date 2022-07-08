@@ -2,7 +2,7 @@ import search from './images/search.png'
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-function Clients({ setSelectedCat }) {
+function Clients({ setSelectedCat, verifyToken }) {
 
   const [mode, setMode] = useState('view');
 

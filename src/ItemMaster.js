@@ -2,11 +2,11 @@ import search from './images/search.png'
 import { useState } from 'react';
 import Loading from './Loading'
 import { useEffect } from 'react';
-import { getAllItems, getAllCategories, createItem, updateItem, removeItem } from './api/index.js';
+import { getAllItems, getAllCategories, createItem, updateItem, removeItem, getCategoriesOfItem } from './api/index.js';
 import ListExchange from './ListExchange';
 import ListView from './ListView';
 
-function ItemMaster({ user, setSelectedCat }) {
+function ItemMaster({ user, setSelectedCat, verifyToken }) {
 
   //component states
 
@@ -28,7 +28,7 @@ function ItemMaster({ user, setSelectedCat }) {
   const [isLoading, setIsLoading] = useState(false);
   const [categoryList, setCategoryList] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [modifyCategoriesDisplay, setModifyCategoriesDisplay] = useState("none");
+  const [categoriesDisplay, setCategoriesDisplay] = useState("none");
   const [deleteDisplay, setDeleteDisplay] = useState("none")
 
   //wrapper set state functions
@@ -61,6 +61,7 @@ function ItemMaster({ user, setSelectedCat }) {
   }
   const setModeView = () => {
     setMode("view");
+    ///
   }
 
 
@@ -136,7 +137,7 @@ function ItemMaster({ user, setSelectedCat }) {
       };
       const newItem = await updateItem(user.token, { itemId, name, description, cost, price, status, webstoreStatus, type, taxable, categories });
       //the above fetch is failing ***FIX***
-      console.log('update item result: ', newItem);
+
       setAllItems(await getAllItems(user.token));
 
 
@@ -147,35 +148,51 @@ function ItemMaster({ user, setSelectedCat }) {
     //return to view item
     setModeView();
   };
-  const onClickView = () => {
-    //
-    const targetItem = allItems.find(item => item.itemNumber === itemNumber);
-    if (typeof (targetItem) === "object") {
-      setName(targetItem.name);
-      setDescription(targetItem.description);
-      setCost(targetItem.cost);
-      setPrice(targetItem.price);
-    };
+  const proccessViewItem = async (itemNumber) => {
+    try {
+      const targetItem = allItems.find(item => item.itemNumber === itemNumber);
+      if (typeof (targetItem) === "object") {
+        const categoriesResp = await getCategoriesOfItem(targetItem.id);
+        console.log('categoriesResp: ', categoriesResp)
+        if (!!categoriesResp) {
+          const resultCategories = categoriesResp.map((categoryItem) => {
+            return categoryList.find(category => category.id === categoryItem.categoryId)
+          });
+          console.log('resultCategories:', resultCategories)
+          setCategories(resultCategories);
+        }
+        setItemNumber(itemNumber);
+        setName(targetItem.name);
+        setDescription(targetItem.description);
+        setCost(targetItem.cost);
+        setPrice(targetItem.price);
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onClickView = async () => {
+    try {
+      await proccessViewItem(itemNumber);
+    } catch (error) {
+      throw error;
+    }
   };
   const onClickItemNumberDropdown = (e) => {
-
-    setItemNumberWrapper(e.target.textContent);
+    proccessViewItem(e.target.textContent);
+    
     setSearchDropdownItems(null);
-    const targetItem = allItems.find(item => item.itemNumber === e.target.textContent);
-    if (typeof (targetItem) === "object") {
-      setName(targetItem.name);
-      setDescription(targetItem.description);
-      setCost(targetItem.cost);
-      setPrice(targetItem.price);
-      setName(targetItem.name);
-    };
-
   };
   const onClickSearchItem = async () => {
     setItemSearchDisplay("block");
   };
-  const onClickModifyCategories = (e) => {
-    setModifyCategoriesDisplay("flex");
+  const onClickCategories = (e) => {
+    console.log('clicked')
+    if(mode !== "view") {
+    setCategoriesDisplay("flex");
+    } else {
+      setCategoriesDisplay("block");
+    }
   };
   const onClickEditCancel = () => {
     const targetItem = allItems.find(item => item.itemNumber === itemNumber);
@@ -199,7 +216,7 @@ function ItemMaster({ user, setSelectedCat }) {
   };
   const onClickConfirmDelete = async () => {
     try {
-      console.log('token: ', user.token);
+
       await removeItem(user.token, itemId);
       setDeleteDisplay('none');
       setAllItems(await getAllItems(user.token));
@@ -299,7 +316,7 @@ function ItemMaster({ user, setSelectedCat }) {
     </div>
   }
   // const modifyCategories = () => {
-  //   return <div className="modify-categories" style={{"display":modifyCategoriesDisplay}}>
+  //   return <div className="modify-categories" style={{"display":categoriesDisplay}}>
   //     <button onClick={onClickCloseModifyCategories}>Close Window</button>
   //     <div className="category-list">
   //     {categoryList.map((category => {
@@ -389,8 +406,15 @@ function ItemMaster({ user, setSelectedCat }) {
           <span>Webstore Status: </span> {webstoreStatus}
         </div>
         <div className="row">
-          <button>View Categories</button>
-          {printCategories()}
+          <button onClick={onClickCategories}>View Categories</button>
+          <ListView
+            inputList={categories}
+            columnKeys={['name']}
+            columnNames={['Name']}
+            componentDisplay={categoriesDisplay}
+            setComponentDisplay={setCategoriesDisplay}
+          />
+          {/* { inputList, columnKeys, columnNames, componentDisplay, setComponentDisplay, rowEnterFunction } */}
         </div>
         <div className="row">
           <button onClick={onClickView}>View</button>
@@ -456,13 +480,13 @@ function ItemMaster({ user, setSelectedCat }) {
 
         </div>
         <div className="row">
-          <button onClick={onClickModifyCategories}>Modify Categories</button>
+          <button onClick={onClickCategories}>Select Categories</button>
           <ListExchange
             inputList={categoryList}
             outputList={categories}
             setOutputList={setCategories}
-            componentDisplay={modifyCategoriesDisplay}
-            setComponentDisplay={setModifyCategoriesDisplay}
+            componentDisplay={categoriesDisplay}
+            setComponentDisplay={setCategoriesDisplay}
           />
         </div>
         <div className="row">
@@ -525,7 +549,14 @@ function ItemMaster({ user, setSelectedCat }) {
 
         </div>
         <div className="row">
-          <button>Modify Categories</button>
+          <button onClick={onClickCategories}>Modify Categories</button>
+          <ListExchange
+            inputList={categoryList}
+            outputList={categories}
+            setOutputList={setCategories}
+            componentDisplay={categoriesDisplay}
+            setComponentDisplay={setCategoriesDisplay}
+          />
         </div>
         <div className="row">
           <button disabled className="inactive">View</button>
@@ -564,6 +595,7 @@ function ItemMaster({ user, setSelectedCat }) {
       setCategoryList(result_getAllItems);
     }
     if (!!user) {
+      // verifyToken(user.token);
       fetchAllItems();
       fetchAllCategories();
     }

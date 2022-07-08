@@ -54,7 +54,6 @@ async function fetchLogin(username, password) {
             return response.json()
         })
         .then(result => {
-            console.log('fetch login result', result);
             return result;
         })
         .catch(console.error)
@@ -91,7 +90,6 @@ const fetchMyOrders = async (user) => {
 // Users front end API
 const fetchUsers = async () => {
     try {
-        console.log('running fetchUsers...');
         const resp = await fetch(`${BASE_URL}/users`, {
             headers: {
                 "Content-Type": "application/json"
@@ -144,7 +142,7 @@ const getAllItems = async (token) => {
 const getItemByItemNumber = async (itemNumber) => {
     try {
         if (typeof (itemNumber) !== 'string') {
-            throw "itemNumber is invalid data type, looking for string."
+            throw new Error("itemNumber is invalid data type, looking for string.")
         }
         const input = itemNumber.toUpperCase();
         const resultJson = await fetch(`${BASE_URL}/items/itemNumber/${input}`);
@@ -177,7 +175,7 @@ const createItem = async (token, { itemNumber, name, description, cost, price, s
         throw error;
     }
 };
-const updateItem = async (token, { itemId, name, description, cost, price, status, webstoreStatus, type, taxable }) => {
+const updateItem = async (token, { itemId, name, description, cost, price, status, webstoreStatus, type, taxable, categories }) => {
     try {
         // console.log('running updateItem...');
         // console.log(token, itemId, name, description, cost, price, status, webstoreStatus, type, taxable)
@@ -189,7 +187,7 @@ const updateItem = async (token, { itemId, name, description, cost, price, statu
                 'authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                name, description, cost, price, status, webstoreStatus, type, taxable
+                name, description, cost, price, status, webstoreStatus, type, taxable, categories
             })
         });
         const result = resultJson.json();
@@ -223,7 +221,6 @@ const getAllCategories = async () => {
         const allItemsJson = await fetch(`${BASE_URL}/categories`);
         const allItems = await allItemsJson.json();
         localStorage.setItem('categoriesList', JSON.stringify(allItems));
-        console.log('cat rows: ', allItems)
         return allItems;
     } catch (error) {
         throw error;
@@ -274,6 +271,12 @@ const removeCategory = async (token, id) => {
         throw error
     }
 };
+const getCategoriesOfItem = async (id) => {
+
+    const resp = await fetch(`${BASE_URL}/itemCategories/${id}`);
+    const tempCategories = await resp.json();
+    return tempCategories
+};
 
 module.exports = {
     fetchCatalog,
@@ -290,5 +293,6 @@ module.exports = {
     removeItem,
     createCategory,
     updateCategory,
-    removeCategory
+    removeCategory,
+    getCategoriesOfItem,
 };

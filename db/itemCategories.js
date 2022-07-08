@@ -35,6 +35,31 @@ const getItemCategoriesByItem = async (itemId) => {
         throw error;
     }
 };
+const updateCategoryItems = async (id, categories) => {
+    const itemCategories = await getItemCategoriesByItem(id)
+    const deletedItemCategories = [];
+    const ignoreItemCategories = [];
+    itemCategories.forEach((itemCategory, index)=> {
+        if(categories.some(category => category.id === itemCategory.categoryId)) {
+            ignoreItemCategories.push(itemCategory);
+        } else {
+            deletedItemCategories.push(itemCategory);
+        }
+    });
+    deletedItemCategories.forEach(async itemCategory => {
+        await removeItemCategory(itemCategory.id);
+    });
+    categories.forEach(async category => {
+        if(ignoreItemCategories.some(itemCategory => itemCategory.categoryId === category.id)) {
+            //ignore
+        } else {
+            //add itemCategory
+            await createItemCategory({ itemId:id, categoryId:category.id })
+        }
+    });
+    return categories;
+
+};
 const getItemCategoriesByCategory = async (categoryId) => {
 
     try {
@@ -78,5 +103,6 @@ module.exports = {
     createItemCategory,
     getItemCategoriesByItem,
     getItemCategoriesByCategory,
-    removeItemCategory
+    removeItemCategory,
+    updateCategoryItems
 }

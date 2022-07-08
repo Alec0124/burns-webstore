@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 
-const GeneralAdmin = ({setSelectedCat}) => {
+const GeneralAdmin = ({setSelectedCat, verifyToken}) => {
 
     useEffect(()=>{
       setSelectedCat('general');

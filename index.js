@@ -550,13 +550,13 @@ itemsRouter.patch('/:itemId', verifyToken, async (req, res, next) => {
         // };
         const itemId = Number(req.params.itemId);
         //edge case: NaN id passed through
-        if (typeof (itemId) !== 'number' || itemId === NaN) {
+        if (typeof (itemId) !== 'number' || isNaN(itemId)) {
             throw new Error('itemId is missing or invalid');
         };
-        const { name, description, cost, price, status, webstoreStatus, type, taxable } = req.body;
+        const { name, description, cost, price, status, webstoreStatus, type, taxable, categories } = req.body;
         // itemNumber, name, description, cost, price, status, webstoreStatus, type, taxable
         const id = itemId;
-        const updatedItem = await updateItem({ id, name, description, cost, price, status, webstoreStatus, type, taxable });
+        const updatedItem = await updateItem({ id, name, description, cost, price, status, webstoreStatus, type, taxable, categories });
         res.send(updatedItem);
         next();
     }
@@ -911,7 +911,7 @@ itemCategoriesRouter.post('', verifyToken, async (req, res, next) => {
 itemCategoriesRouter.get('/:itemId', async (req, res, next) => {
 
     const itemId = Math.floor(Number(req.params.itemId));
-    if (typeof (itemId) !== 'number' || itemId === NaN) {
+    if (typeof (itemId) !== 'number' || isNaN(itemId)) {
         respError('invalid_itemId', 'itemId is missing or invalid')
     }
     try {

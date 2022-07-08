@@ -196,6 +196,7 @@
     background-color: lightblue;
     overflow: scroll;
     display: block;
+    z-index: 10;
   }
   .item-search > .row {
     color: black;

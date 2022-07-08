@@ -6,7 +6,7 @@ import { updateCategory, getAllCategories, createCategory, removeCategory, remov
 import ListExchange from './ListExchange';
 import ListView from './ListView';
 
-function Categories({ user, setSelectedCat }) {
+function Categories({ user, setSelectedCat, verifyToken }) {
 
   //component states
 
@@ -79,7 +79,6 @@ function Categories({ user, setSelectedCat }) {
     try {
       //requirements
       const updatedCategory = await updateCategory(user.token, categoryId, name);
-      console.log('updatedCategory: ', updatedCategory);
       //need to refresh category list
     }
     catch (error) { throw error }
@@ -186,7 +185,7 @@ function Categories({ user, setSelectedCat }) {
         //search db for item numbers
         //likely using poor async form here
         const previewList = categoryList.filter(category => {
-          console.log('inside previwList')
+
           if (!category.name) {
             throw new Error('could not red category.name in nameOnChange()')
           }
@@ -194,7 +193,7 @@ function Categories({ user, setSelectedCat }) {
           const searchQuery = e.target.value.toLowerCase();
           return (categoryName.includes(searchQuery))
         });
-        console.log('preview list: ', previewList)
+
 
         setSearchDropdownItems(previewList);
       };
@@ -386,12 +385,15 @@ function Categories({ user, setSelectedCat }) {
     setSelectedCat("categories");
     try {
       asyncSetCategories();
-      console.log('categoryList: ', categoryList);
+
 
     } catch (error) {
       throw error
     }
     //category of the Admin app that is.
+
+    // verifyToken(user.token);
+
 
   }, []);
 

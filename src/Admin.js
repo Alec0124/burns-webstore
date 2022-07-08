@@ -32,7 +32,38 @@ function Admin() {
       return 'admin-nav-cat selected'
     } else return 'admin-nav-cat';
   }
+  const verifyToken = async (token) => {
+    if (typeof (token) !== 'string') {
+      throw new Error('missing token');
+    }
+    const verifiedUser = await fetch('http://localhost:5000/api/verify', {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return verifiedUser;
+  };
+  const verifyTokenWrapper = async (token) => {
+    if (!!token) {
+      //verify token
+      const verifiedUserJson = await verifyToken(token);
+      const verifiedUser = await verifiedUserJson.json();
+      console.log('verified:', verifiedUser);
+      if (verifiedUser.name === 'TokenExpiredError') {
+        //throw error and logout
+        navigate("/admin/logout", { replace: true });
+      };
+      if (verifiedUser.user) {
+        await setUserWrapper(verifiedUser.user);
+      };
 
+      //set localStorage and props state with the retreived user data
+
+    } else {
+      //do nothing, no token detected on this render
+    };
+  };
   const PrintAdminRoot = () => {
     return (
       <div className="admin-app">
@@ -72,10 +103,10 @@ function Admin() {
         <Routes>
           <Route exact path="/" element={<GeneralAdmin setSelectedCat={setSelectedCat} />} />
           <Route exact path="/logout" element={<Logout />} />
-          <Route path="/item-master" element={<ItemMaster user={user} setSelectedCat={setSelectedCat} />} />
-          <Route path="/categories" element={<Categories user={user} setSelectedCat={setSelectedCat} />} />
-          <Route path="/orders" element={<OrdersAdmin setSelectedCat={setSelectedCat} />} />
-          <Route path="/clients" element={<Clients setSelectedCat={setSelectedCat} />} />
+          <Route path="/item-master" element={<ItemMaster user={user} setSelectedCat={setSelectedCat} verifyToken={verifyTokenWrapper}/>} />
+          <Route path="/categories" element={<Categories user={user} setSelectedCat={setSelectedCat} verifyToken={verifyTokenWrapper} />} />
+          <Route path="/orders" element={<OrdersAdmin setSelectedCat={setSelectedCat} verifyToken={verifyTokenWrapper} />} />
+          <Route path="/clients" element={<Clients setSelectedCat={setSelectedCat} verifyToken={verifyTokenWrapper} />} />
         </Routes>
 
       </div >
@@ -96,7 +127,6 @@ function Admin() {
 
   useEffect(() => {
     //functions
-
     const verifyToken = async (token) => {
       if (typeof (token) !== 'string') {
         throw new Error('missing token');
@@ -107,7 +137,6 @@ function Admin() {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('token verified?', verifiedUser);
       return verifiedUser;
     };
     const verifyTokenWrapper = async (token) => {
@@ -123,13 +152,14 @@ function Admin() {
         if (verifiedUser.user) {
           await setUserWrapper(verifiedUser.user);
         };
-
+  
         //set localStorage and props state with the retreived user data
-
+  
       } else {
         //do nothing, no token detected on this render
       };
     };
+    
     try {
       //script
 

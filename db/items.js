@@ -1,7 +1,7 @@
 const { getCategoryById } = require("./categories");
 const { client } = require("./client");
 const { testFirstRow, getNestedTable, getQueryValuesString ,deleteReferencedTable, deleteTableRow } = require("./api");
-const { getItemCategoriesByItem } = require("./itemCategories");
+const { getItemCategoriesByItem, updateCategoryItems } = require("./itemCategories");
 
 //creates new item row in DB
 const createItem = async ({ itemNumber, description, name, cost, price, onHand, status, type, webstoreStatus }) => {
@@ -86,7 +86,7 @@ const getAllItems = async () => {
     }
 };
 //updates an item row by id
-const updateItem = async ({ id, name, description, cost, price, status, webstoreStatus, taxable, type }) => {
+const updateItem = async ({ id, name, description, cost, price, status, webstoreStatus, taxable, type, categories }) => {
     console.log('running updateItem()');
     try {
 
@@ -135,6 +135,10 @@ const updateItem = async ({ id, name, description, cost, price, status, webstore
         const { rows } = await client.query(`UPDATE items ${queryValuesString}`, valuesArray);
         testFirstRow(rows);
         console.log('updated item: ', rows);
+        /////////
+        const updatedCategories = await updateCategoryItems(id, categories);
+        console.log('updatedCategories: ', updatedCategories);
+        rows[0].categories = updatedCategories;
         return rows[0];
     }
 
