@@ -1,3 +1,5 @@
+const {deleteTableRow} = require("./api")
+
 const { client } = require("./client");
 const { testFirstRow, respError } = require("./api");
 
@@ -38,7 +40,6 @@ const getAllCategories = async () => {
 
         const { rows } = await client.query(`SELECT * FROM categories;`);
         testFirstRow(rows);
-
         return rows;
     }
 
@@ -71,20 +72,8 @@ const updateCategory = async ({id, name}) => {
 const removeCategory = async (id) => {
 
     try {
-        const deleteReferencedTable = async ({topTable, bottomTable, referenceName, id}) => {
-            const deletedBottomRows = await client.query(`DELETE FROM $1  
-            WHERE id=($2) 
-            RETURNING *;`, [bottomTable, id]).rows;
-            testFirstRow(deletedBottomRows);
-            const deletedTopRow = await client.query(`DELETE FROM $1  
-            WHERE $2=($3) 
-            RETURNING *;`, [ topTable, referenceName, id ]).rows;
-            testFirstRow(deletedTopRow);
-            deletedTopRow[bottomTable] = deletedBottomRows;
-            return deletedTopRow;
 
-        };
-        return deleteReferencedTable('categories', '"itemCategories', 'categoryId', id);
+        return await deleteTableRow('categories', 'id', id);
 
     }
 

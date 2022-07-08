@@ -80,6 +80,7 @@ function requirePassword(req, res, next) {
 
 const verifyToken = async (req, res, next) => {
     try {
+        console.log('ver tok start')
         const prefix = 'Bearer ';
         const auth = await req.header('authorization');
 
@@ -91,13 +92,14 @@ const verifyToken = async (req, res, next) => {
 
             const verified = jwt.verify(token, JWT_SECRET);
             console.log('token verifiied: ', verified);
-                next();
+            next();
         } else {
-                res.status(401);
-                res.send(`Authorization token must start with ${prefix}`);
-            }
+            res.status(401);
+            res.send(`Authorization token must start with ${prefix}`);
         }
+    }
     catch (error) {
+        console.error(error)
         res.send(error);
     }
 };
@@ -206,7 +208,7 @@ usersRouter.post('/login', requireUsername, requirePassword, async (req, res, ne
 
         const user = await loginUser({ username, password });
 
-        const token = jwt.sign({ id: user.id, username, exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24) }, JWT_SECRET);
+        const token = jwt.sign({ id: user.id, username, exp: Math.floor(Date.now()) + (1000 * 60 * 60 * 24) }, JWT_SECRET);
         // const token = 'apple';
         res.send(JSON.stringify({ message: 'Login user success!', user, token }));
         next();
@@ -568,7 +570,7 @@ itemsRouter.patch('/:itemId', verifyToken, async (req, res, next) => {
 //deletes item from DB and all associated line items
 
 itemsRouter.delete('/:itemId', verifyToken, async (req, res, next) => {
-    
+
     try {
         // if (!req.user.admin) {
         //     throw new Error('must use token of admin user');
@@ -728,13 +730,13 @@ lineItemsRouter.delete('/:lineItemId', verifyToken, async (req, res, next) => {
 
 categoriesRouter.post('', verifyToken, async (req, res, next) => {
 
-    if (!req.user.admin) {
-        throw {
-            name: 'error_requireAdmin',
-            error: 'must use token of admin user',
-            message: 'must use token of admin user'
-        };
-    };
+    // if (!req.user.admin) {
+    //     throw {
+    //         name: 'error_requireAdmin',
+    //         error: 'must use token of admin user',
+    //         message: 'must use token of admin user'
+    //     };
+    // };
     const { name } = req.body;
 
     try {
@@ -801,15 +803,15 @@ categoriesRouter.get('', async (req, res, next) => {
 
 categoriesRouter.patch('/:categoryId', verifyToken, async (req, res, next) => {
 
-    if (!req.user.admin) {
-        throw {
-            name: 'error_requireAdmin',
-            error: 'must use token of admin user',
-            message: 'must use token of admin user'
-        };
-    };
+    // if (!req.user.admin) {
+    //     throw {
+    //         name: 'error_requireAdmin',
+    //         error: 'must use token of admin user',
+    //         message: 'must use token of admin user'
+    //     };
+    // };
     const id = Math.floor(Number(req.params.categoryId));
-    if (typeof (id) !== 'number' || id === NaN) {
+    if (typeof (id) !== 'number' || isNaN(id)) {
         respError('invalid_categoryId', 'categoryId is missing or invalid')
     };
     const { name } = req.body;
@@ -832,33 +834,40 @@ categoriesRouter.patch('/:categoryId', verifyToken, async (req, res, next) => {
 
 categoriesRouter.delete('/:categoryId', verifyToken, async (req, res, next) => {
 
-    if (!req.user.admin) {
-        throw {
-            name: 'error_requireAdmin',
-            error: 'must use token of admin user',
-            message: 'must use token of admin user'
-        };
-    };
-    const id = Math.floor(Number(req.params.categoryId));
-    if (typeof (id) !== 'number' || id === NaN) {
-        respError('invalid_categoryId', 'categoryId is missing or invalid')
-    }
+    console.log('delete cat id running');
+
+    // if (!req.user.admin) {
+    //     throw {
+    //         name: 'error_requireAdmin',
+    //         error: 'must use token of admin user',
+    //         message: 'must use token of admin user'
+    //     };
+    // };
 
     try {
-
+        const id = Math.floor(Number(req.params.categoryId));
+        if (typeof (id) !== 'number' || isNaN(id)) {
+            throw new Error('categoryId is missing or invalid');
+        }
+        // *** Does not delete categories that have itemcategory links. Needs work ***
         const itemCategories = await getItemCategoriesByCategory(id);
+        console.log('itemCategories: ', itemCategories);
 
-        itemCategories.forEach(async itemCategory => {
-            await removeItemCategory(itemCategory.id);
-        });
-
+        if (!!itemCategories) {
+            itemCategories.forEach(async itemCategory => {
+                await removeItemCategory(itemCategory.id);
+            });
+        }
         const data = await removeCategory(id);
-        data.itemCategories = itemCategories;
+        if (!!itemCategories) {
+            data.itemCategories = itemCategories;
+        }
+
         res.send(data);
         next();
     }
-    catch ({ name, message }) {
-        next({ name, message })
+    catch (error) {
+        next(error)
     }
 
 });

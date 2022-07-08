@@ -2,7 +2,7 @@ const BASE_URL = 'http://localhost:5000/api';
 
 // *** Functions ***
 
-const respError = async ( name, message ) => {
+const respError = async (name, message) => {
     throw new Error({
         name,
         message,
@@ -13,24 +13,24 @@ const respError = async ( name, message ) => {
 
 //Register a user
 async function fetchRegister(username, password) {
-try {
-  return await fetch(`${BASE_URL}/users/register`, {
-      method: "POST",
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-          user: {
-              username,
-              password
-          }
-      })
-  })
-      .then(response => response.json())
-      .then(result => {
-          return result;
-      })
-      .catch(console.error);
+    try {
+        return await fetch(`${BASE_URL}/users/register`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user: {
+                    username,
+                    password
+                }
+            })
+        })
+            .then(response => response.json())
+            .then(result => {
+                return result;
+            })
+            .catch(console.error);
     }
     catch (error) {
         throw error;
@@ -40,24 +40,24 @@ try {
 
 //Login a user
 async function fetchLogin(username, password) {
-  return await fetch(`${BASE_URL}/users/login`, {
-      method: "POST",
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-              username: username,
-              password: password
-      })
-  })
-      .then(response => {
-        return response.json()
+    return await fetch(`${BASE_URL}/users/login`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
         })
-      .then(result => {
-          console.log('fetch login result',result);
-          return result;
-      })
-      .catch(console.error)
+    })
+        .then(response => {
+            return response.json()
+        })
+        .then(result => {
+            console.log('fetch login result', result);
+            return result;
+        })
+        .catch(console.error)
 }
 
 
@@ -78,15 +78,15 @@ async function fetchCatalog() {
 
 //Return list of user's orders
 const fetchMyOrders = async (user) => {
-  const resp = await fetch(`/api/users/${user.username}/orders`,
-      {
-          headers: {
-              "Content-Type": "application/json",
-              "authorization": "Bearer " + user.token
-          }
-      }
-  );
-  return await resp.json();
+    const resp = await fetch(`/api/users/${user.username}/orders`,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + user.token
+            }
+        }
+    );
+    return await resp.json();
 };
 // Users front end API
 const fetchUsers = async () => {
@@ -99,7 +99,7 @@ const fetchUsers = async () => {
         });
         // console.log(resp);
         const users = resp.json();
-        if(users===null) {
+        if (users === null) {
             respError("USERS_NULL", "Could not retrieve users")
         };
         return users;
@@ -111,27 +111,27 @@ const fetchUsers = async () => {
 const getUserByUsername = async (username) => {
     try {
         const user = await fetch(`${BASE_URL}/users/${username}`);
-        if(user===undefined) {
+        if (user === undefined) {
             throw new Error("user undefined, fetch failed.");
         };
-        return  user.json();
-    }   
+        return user.json();
+    }
     catch (error) {
         throw error;
     }
 };
 
-//Item Functions
+//  ***Item Functions***
 const getAllItems = async (token) => {
     try {
-        if(!token) {
+        if (!token) {
             throw new Error('missing token');
         }
         const allItemsJson = await fetch(`${BASE_URL}/items`, {
             method: "GET",
             headers: {
-                "Content-Type":"application/json",
-                "authorization":`Bearer ${token}`
+                "Content-Type": "application/json",
+                "authorization": `Bearer ${token}`
             }
         });
         const allItems = await allItemsJson.json();
@@ -141,21 +141,9 @@ const getAllItems = async (token) => {
         throw error;
     }
 };
-
-const getAllCategories = async () => {
-    try {
-        const allItemsJson = await fetch(`${BASE_URL}/categories`);
-        const allItems = await allItemsJson.json();
-        localStorage.setItem('categoriesList', JSON.stringify(allItems));
-        return allItems;
-    } catch (error) {
-        throw error;
-    }
-};
-
 const getItemByItemNumber = async (itemNumber) => {
     try {
-        if(typeof(itemNumber) !== 'string') {
+        if (typeof (itemNumber) !== 'string') {
             throw "itemNumber is invalid data type, looking for string."
         }
         const input = itemNumber.toUpperCase();
@@ -169,7 +157,7 @@ const getItemByItemNumber = async (itemNumber) => {
     }
 };
 
-const createItem = async (token, {itemNumber, name, description, cost, price, status, webstoreStatus, type, taxable, categories}) => {
+const createItem = async (token, { itemNumber, name, description, cost, price, status, webstoreStatus, type, taxable, categories }) => {
     try {
         // console.log('running createItem...', itemNumber);
         const resultJson = await fetch(`${BASE_URL}/items`, {
@@ -189,7 +177,7 @@ const createItem = async (token, {itemNumber, name, description, cost, price, st
         throw error;
     }
 };
-const updateItem = async (token, {itemId, name, description, cost, price, status, webstoreStatus, type, taxable}) => {
+const updateItem = async (token, { itemId, name, description, cost, price, status, webstoreStatus, type, taxable }) => {
     try {
         // console.log('running updateItem...');
         // console.log(token, itemId, name, description, cost, price, status, webstoreStatus, type, taxable)
@@ -214,20 +202,78 @@ const updateItem = async (token, {itemId, name, description, cost, price, status
 
 const removeItem = async (token, id) => {
     try {
-    const result = await fetch(`${BASE_URL}/items/${id}`, {
-        method: "DELETE",
-        headers: {
-            'Content-Type': 'application/json',
-            'authorization': `Bearer ${token}`
-        }
-    });
-    const finalResult = await result.json()
-    return finalResult;
+        const result = await fetch(`${BASE_URL}/items/${id}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${token}`
+            }
+        });
+        const finalResult = await result.json()
+        return finalResult;
     }
     catch (error) {
         throw error
     }
 }
+
+//  *** Category Functions ***
+const getAllCategories = async () => {
+    try {
+        const allItemsJson = await fetch(`${BASE_URL}/categories`);
+        const allItems = await allItemsJson.json();
+        localStorage.setItem('categoriesList', JSON.stringify(allItems));
+        console.log('cat rows: ', allItems)
+        return allItems;
+    } catch (error) {
+        throw error;
+    }
+};
+const createCategory = async (token, name) => {
+    try {
+        const resp = await fetch(`${BASE_URL}/categories`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ name })
+        });
+        const newCategory = resp.json();
+
+        return newCategory;
+    } catch (error) { throw error }
+};
+const updateCategory = async (token, id, name) => {
+    try {
+        const resp = await fetch(`${BASE_URL}/categories/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ name })
+        });
+        const updatedCategory = resp.json();
+        return updatedCategory;
+    } catch (error) { throw error }
+};
+const removeCategory = async (token, id) => {
+    try {
+        const result = await fetch(`${BASE_URL}/categories/${id}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${token}`
+            }
+        });
+        const finalResult = await result.json()
+        return finalResult;
+    }
+    catch (error) {
+        throw error
+    }
+};
 
 module.exports = {
     fetchCatalog,
@@ -241,5 +287,8 @@ module.exports = {
     createItem,
     getUserByUsername,
     updateItem,
-    removeItem
+    removeItem,
+    createCategory,
+    updateCategory,
+    removeCategory
 };

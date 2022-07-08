@@ -38,10 +38,12 @@ const getItemCategoriesByItem = async (itemId) => {
 const getItemCategoriesByCategory = async (categoryId) => {
 
     try {
-
+        console.log('entering getItemCategoriesByCategory')
         const { rows } = await client.query(`SELECT * FROM "itemCategories" 
         WHERE "categoryId"=($1)`, [categoryId]);
-        testFirstRow(rows);
+        if(!rows) {
+            return false
+        };
 
         return rows[0];
     }
