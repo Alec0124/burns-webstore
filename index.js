@@ -478,7 +478,7 @@ itemsRouter.post('', verifyToken, async (req, res, next) => {
 //GET api/items (public)
 //returns array of all item objects
 //only returns cost if admin token is used -NOT IMPLEMENTED
-itemsRouter.get('', verifyToken, async (req, res, next) => {
+itemsRouter.get('', async (req, res, next) => {
     //includes categories
 
 

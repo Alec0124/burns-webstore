@@ -120,18 +120,12 @@ const getUserByUsername = async (username) => {
 };
 
 //  ***Item Functions***
-const getAllItems = async (token) => {
+const getAllItems = async () => {
     try {
-        if (!token) {
-            throw new Error('missing token');
-        }
-        const allItemsJson = await fetch(`${BASE_URL}/items`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": `Bearer ${token}`
-            }
-        });
+        // if (!token) {
+        //     throw new Error('missing token');
+        // }
+        const allItemsJson = await fetch(`${BASE_URL}/items`);
         const allItems = await allItemsJson.json();
         localStorage.setItem('allItems', JSON.stringify(allItems));
         return allItems;
