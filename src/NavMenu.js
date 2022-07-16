@@ -8,8 +8,6 @@ const NavMenu = ({ setSelectedCategory, selectedCategory, categoryList }) => {
         return <NavLink to={`/category/${category.id}`} key={category.id}> {category.name}</NavLink>
         
 }
-    console.log('category List: ',categoryList)
-    console.log('Boolean: ', Array.isArray(categoryList));
     if(Array.isArray(categoryList)) {
     return ( <div className="nav-menu">
         <NavLink to="/home" >Home</NavLink>

@@ -1,10 +1,12 @@
 import React from "react";
 import NavMenu from "./NavMenu.js";
-import StoreContent from "./StoreContent.js";
+import Category from "./Category.js";
+import Home from "./Home.js";
 import StoreFooter from "./StoreFooter.js";
-import StoreHeader from "./StoreHeader.js"
+import StoreHeader from "./StoreHeader.js";
 import { useState, useEffect } from "react";
-import { getAllCategories, getAllItems } from "./api/index.js"
+import { getAllCategories, getAllItems } from "./api/index.js";
+import { Route, Routes } from "react-router-dom";
 
 function Webstore() {
 
@@ -21,22 +23,21 @@ function Webstore() {
     //check local storge for categories
     const verifyItems = async () => {
       try {
-          if (contentItems === null) {
-              const itemsResp = localStorage.getItem('items');
-              if (!!itemsResp) {
-                  const localItems = await JSON.parse(itemsResp);
+        if (contentItems === null) {
+          const itemsResp = localStorage.getItem('items');
+          if (!!itemsResp) {
+            const localItems = await JSON.parse(itemsResp);
 
 
-                  setContentItems(localItems);
-              } else {
-                  const tempItems = await getAllItems();
-                  console.log("tempItems: ", tempItems);
-                  localStorage.setItem("items", JSON.stringify(tempItems));
-                  setContentItems(tempItems);
-              }
+            setContentItems(localItems);
+          } else {
+            const tempItems = await getAllItems();
+            localStorage.setItem("items", JSON.stringify(tempItems));
+            setContentItems(tempItems);
           }
+        }
       } catch (error) { throw error }
-  };
+    };
 
     const verifyCategories = async () => {
       try {
@@ -44,12 +45,9 @@ function Webstore() {
           const categoriesResp = localStorage.getItem('categories');
           if (!!categoriesResp && categoryList === []) {
             const localCategories = await JSON.parse(categoriesResp);
-            console.log("localCategories: ", localCategories)
-            console.log("localCategories type: ", typeof (localCategories))
             await setCategoryListWrapper(localCategories);
           } else {
             const tempCategories = await getAllCategories();
-            console.log("tempCategory: ", tempCategories);
             localStorage.setItem("categories", JSON.stringify(tempCategories));
             await setCategoryListWrapper(tempCategories);
           }
@@ -68,7 +66,10 @@ function Webstore() {
     <div className="App">
       <StoreHeader categoryList={categoryList} />
       <NavMenu setSelectedCategory={setSelectedCategory} selectedCategory={selectedCategory} categoryList={categoryList} />
-      <StoreContent contentItems={contentItems} selectedCategory={selectedCategory} />
+      <Routes>
+        <Route path="/home" element={<Home />} />
+        <Route path="/category/:id" element={<Category contentItems={contentItems} />} />
+      </Routes>
       <StoreFooter />
     </div>
   );

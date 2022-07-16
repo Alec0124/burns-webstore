@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import {getAllItems} from "./api/index.js"
 
-const StoreContent = ({ selectedCategoryId, contentItems }) => {
+const StoreContent = ({ contentItems }) => {
     
     //Store Logo (also home button) // Search Bar // My Account // My Orders // Cart
 
+    
 
     // useEffect(() => {
         
@@ -13,17 +14,9 @@ const StoreContent = ({ selectedCategoryId, contentItems }) => {
     const mapContentItems = () => {
 
         if (!!contentItems) {
-            console.log("contentItems is true", contentItems)
+
             return (<div className="store-content">
-                {contentItems.map((item) => {
-                    return (<div className="thumbnail" key={item.id} >
-                        <div>{item.name}</div>
-                        {/* image */}
-                        <div>{item.itemNumber}</div>
-                        <div>{item.price}</div>
-                    </div>)
-                })
-                }
+                HOME
             </div>)
         } else {
             return null;
