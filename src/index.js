@@ -7,7 +7,7 @@ import {
   Routes
 } from "react-router-dom";
 import Webstore from './Webstore';
-import Admin from './Admin';
+import Admin from './admin/Admin';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

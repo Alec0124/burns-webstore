@@ -1,4 +1,4 @@
-import search from './images/search.png'
+import search from '../images/search.png'
 import { useState } from 'react';
 import { useEffect } from 'react';
 

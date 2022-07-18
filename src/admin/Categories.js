@@ -1,8 +1,8 @@
-import search from './images/search.png'
+import search from '../images/search.png'
 import { useState } from 'react';
 import Loading from './Loading'
 import { useEffect } from 'react';
-import { updateCategory, getAllCategories, createCategory, removeCategory, removeItem } from './api/index.js';
+import { updateCategory, getAllCategories, createCategory, removeCategory, removeItem } from '../api/index.js';
 import ListExchange from './ListExchange';
 import ListView from './ListView';
 

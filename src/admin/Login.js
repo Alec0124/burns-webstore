@@ -1,15 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getUserByUsername } from './api';
-import { fetchLogin } from './api';
+import { getUserByUsername } from '../api';
+import { fetchLogin } from '../api';
 
 
 
-const Login = ({user, setUser, displayLogin}) => {
-    const navigate = useNavigate();
-    if(!!user) {
-        navigate("/home");
-    }
+const Login = ({user, setUser}) => {
+
     //states
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
@@ -62,7 +58,7 @@ const Login = ({user, setUser, displayLogin}) => {
     };
 
 
-    return (<div className="Login" style={{display: displayLogin}}>
+    return (<div className="Login">
         <div className="row">
             Print errors here
         </div>

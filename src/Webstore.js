@@ -1,6 +1,11 @@
 import React from "react";
 import NavMenu from "./NavMenu.js";
 import Category from "./Category.js";
+import Cart from "./Cart.js";
+import Login from "./Login.js";
+import Checkout from "./Checkout.js";
+import Register from "./Register.js";
+import Item from "./Item.js";
 import Home from "./Home.js";
 import StoreFooter from "./StoreFooter.js";
 import StoreHeader from "./StoreHeader.js";
@@ -8,12 +13,27 @@ import { useState, useEffect } from "react";
 import { getAllCategories, getAllItems } from "./api/index.js";
 import { Route, Routes } from "react-router-dom";
 
+//toDoList
+//Touch up Login component, useful error messaging
+//create register page and functionality
+//Successful Chekout should create a new order for that user
+//Need to create OrderHistory Component
+//Need Search Bar Functionality for Webstore
+//Have a place in admin to upload store logo, make funcitonal
+//modify database to accept images for items. They should have a thumbnail, small, reg.
+
+//will need to review the admin security
+
+
+
 function Webstore() {
 
 
   const [categoryList, setCategoryList] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('home');
-  const [contentItems, setContentItems] = useState(null);
+  const [contentItems, setContentItems] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [user, setUser] = useState(false);
 
   const setCategoryListWrapper = async (value) => {
     setCategoryList(value)
@@ -23,7 +43,7 @@ function Webstore() {
     //check local storge for categories
     const verifyItems = async () => {
       try {
-        if (contentItems === null) {
+        if (contentItems.length < 1) {
           const itemsResp = localStorage.getItem('items');
           if (!!itemsResp) {
             const localItems = await JSON.parse(itemsResp);
@@ -32,6 +52,9 @@ function Webstore() {
             setContentItems(localItems);
           } else {
             const tempItems = await getAllItems();
+            tempItems.forEach((item)=>{
+              delete item.cost;
+            })
             localStorage.setItem("items", JSON.stringify(tempItems));
             setContentItems(tempItems);
           }
@@ -54,9 +77,24 @@ function Webstore() {
         }
       } catch (error) { throw error }
     };
+    const verifyCart = async () => {
+      try {
+        if (cart.length < 1) {
+          const cartResp = localStorage.getItem('cart');
+          if (!!cartResp) {
+            const localCart = await JSON.parse(cartResp);
+
+
+            setCart(localCart);
+            localStorage.setItem("cart", JSON.stringify(localCart))
+          } 
+        }
+      } catch (error) { throw error }
+    };
 
     verifyCategories();
     verifyItems();
+    verifyCart();
 
     //if exists store into state
     //if not, fetch categories and store them in state and localStorage.
@@ -64,10 +102,15 @@ function Webstore() {
 
   return (
     <div className="App">
-      <StoreHeader categoryList={categoryList} />
+      <StoreHeader cart={cart}  />
       <NavMenu setSelectedCategory={setSelectedCategory} selectedCategory={selectedCategory} categoryList={categoryList} />
       <Routes>
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login displayLogin="block" user={user} setUser={setUser} />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/cart" element={<Cart cart={cart} setCart={setCart} />} />
+        <Route path="/checkout" element={<Checkout setCart={setCart} cart={cart} user={user} />} />
+        <Route path="/item/:itemNumber" element={<Item contentItems={contentItems} cart={cart} setCart={setCart} />} />
         <Route path="/category/:id" element={<Category contentItems={contentItems} />} />
       </Routes>
       <StoreFooter />

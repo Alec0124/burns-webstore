@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {getAllItems} from "./api/index.js";
-import {useParams} from "react-router-dom";
+import {useParams, Link} from "react-router-dom";
 
 const Category = ({ contentItems }) => {
     
@@ -23,13 +23,13 @@ const Category = ({ contentItems }) => {
 
                     if(item.categories.some((category)=> category.id === Number(id))) {
 
-                    return (<div className="thumbnail" key={item.id} >
+                    return (<Link to={`/item/${item.itemNumber}`} className="thumbnail" key={item.id} >
                         <div><b>{item.name}</b></div>
                         {/* image */}
                         <img alt="thumb_image" />
                         <div><small># {item.itemNumber}</small></div>
                         <div>${Number.parseFloat(item.price).toFixed(2)}</div>
-                    </div>)
+                    </Link>)
         }
     else {
         return null;
