@@ -7,10 +7,11 @@ import Checkout from "./Checkout.js";
 import Register from "./Register.js";
 import Item from "./Item.js";
 import Home from "./Home.js";
+import Logout from "./Logout.js";
 import StoreFooter from "./StoreFooter.js";
 import StoreHeader from "./StoreHeader.js";
 import { useState, useEffect } from "react";
-import { getAllCategories, getAllItems } from "./api/index.js";
+import { BASE_URL, getAllCategories, getAllItems } from "./api/index.js";
 import { Route, Routes } from "react-router-dom";
 
 //toDoList
@@ -52,7 +53,7 @@ function Webstore() {
             setContentItems(localItems);
           } else {
             const tempItems = await getAllItems();
-            tempItems.forEach((item)=>{
+            tempItems.forEach((item) => {
               delete item.cost;
             })
             localStorage.setItem("items", JSON.stringify(tempItems));
@@ -87,7 +88,31 @@ function Webstore() {
 
             setCart(localCart);
             localStorage.setItem("cart", JSON.stringify(localCart))
-          } 
+          }
+        }
+      } catch (error) { throw error }
+    };
+    const verifyUser = async () => {
+      try {
+        if (user === false) {
+          const tokenResp = localStorage.getItem('token');
+          if (!!tokenResp) {
+
+            const userResp = await fetch(`${BASE_URL}/verify`, {
+              headers: {
+                "Content-Type": "application/json",
+                "authorization": `Bearer ${tokenResp}`
+              }
+            });
+            const verifiedUser = await userResp.json();
+            if (verifiedUser.name === "JsonWebTokenError") {
+              throw new Error(verifiedUser.message);
+            }
+
+
+            setUser(verifiedUser.user);
+
+          }
         }
       } catch (error) { throw error }
     };
@@ -95,6 +120,7 @@ function Webstore() {
     verifyCategories();
     verifyItems();
     verifyCart();
+    verifyUser();
 
     //if exists store into state
     //if not, fetch categories and store them in state and localStorage.
@@ -102,11 +128,12 @@ function Webstore() {
 
   return (
     <div className="App">
-      <StoreHeader cart={cart}  />
+      <StoreHeader cart={cart} user={user} setUser={setUser} />
       <NavMenu setSelectedCategory={setSelectedCategory} selectedCategory={selectedCategory} categoryList={categoryList} />
       <Routes>
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login displayLogin="block" user={user} setUser={setUser} />} />
+      <Route path="/logout" element={<Logout setUser={setUser} />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login displayLogin="block" user={user} setUser={setUser} />} />
         <Route path="/home" element={<Home />} />
         <Route path="/cart" element={<Cart cart={cart} setCart={setCart} />} />
         <Route path="/checkout" element={<Checkout setCart={setCart} cart={cart} user={user} />} />

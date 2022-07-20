@@ -272,6 +272,7 @@ const getCategoriesOfItem = async (id) => {
     return tempCategories
 };
 
+
 module.exports = {
     fetchCatalog,
     fetchRegister,
@@ -289,4 +290,5 @@ module.exports = {
     updateCategory,
     removeCategory,
     getCategoriesOfItem,
+    BASE_URL
 };

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Login from "./Login";
 
@@ -6,6 +6,7 @@ const storeLogo = require("./StoreHeader.js");
 
 const StoreHeader = ({ cart, user, setUser }) => {
     //Store Logo (also home button) // Search Bar // My Account // My Orders // Cart
+    const navigate = useNavigate();
     const [loginDisplay, setLoginDisplay] = useState("none");
     const printCartQuantity = () => {
         if (cart.length < 1) {
@@ -18,7 +19,17 @@ const StoreHeader = ({ cart, user, setUser }) => {
         e.preventDefault();
         setLoginDisplay("block");
     }
+    const onClickLogout = (e) => {
+        e.preventDefault();
+        navigate('/logout');
+    };
     const displayLoginButton = () => {
+        if (!!user) {
+            return <div>
+                User: {user.username} 
+                <button onClick={onClickLogout} style={{marginLeft:"5px"}}>Logout</button>
+            </div>
+        }
         if (loginDisplay === "none") {
             return <div>
                 <Login displayLogin={loginDisplay} user={user} setUser={setUser} />
@@ -26,7 +37,7 @@ const StoreHeader = ({ cart, user, setUser }) => {
                 <button>Register</button>
             </div>
         } else {
-            return <Login displayLogin={loginDisplay} user={user} setUser={setUser} />
+            return <div><Login displayLogin={loginDisplay} user={user} setUser={setUser} /></div>
         }
     }
 

@@ -105,7 +105,6 @@ const verifyToken = async (req, res, next) => {
 };
 
 const verifyTokenReturn = async (req, res, next) => {
-
     try {
         const prefix = 'Bearer ';
         const auth = req.header('authorization');

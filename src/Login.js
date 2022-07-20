@@ -53,7 +53,7 @@ const Login = ({user, setUser, displayLogin}) => {
             if (typeof (userObject) !== 'object') {
                 throw new Error('expected object type of parmeter, error');
             };
-            localStorage.setItem('user', JSON.stringify(userObject));
+            localStorage.setItem('token', userObject.token);
             setUser(userObject);
             console.log('stored user: ', userObject);
         }
