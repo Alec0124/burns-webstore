@@ -7,7 +7,7 @@ const createLineItem = async ({ itemId, orderId, quantity, cost, price, name, de
 
     try {
         const valuesArray = [itemId, orderId, quantity, cost, price, name, description];
-        console.log('creating lineItm sql')
+        console.log('creating lineItm sql');
         const { rows } = await client.query(`INSERT INTO "lineItems"("itemId", "orderId", quantity, cost, price, name, description) 
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *;`, valuesArray);

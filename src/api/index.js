@@ -10,9 +10,12 @@ const respError = async (name, message) => {
     });
 };
 
-
+// ***USERS***
 //Register a user
-async function fetchRegister(username, password) {
+async function fetchRegister({ username, password, address1Billing,
+    address1Shipping, address2Billing, address2Shipping, zipBilling, zipShipping,
+    cityBilling, cityShipping, stateBilling, stateShipping, phoneBilling, phoneShipping,
+    emailBilling, emailShipping, firstName, lastName }) {
     try {
         return await fetch(`${BASE_URL}/users/register`, {
             method: "POST",
@@ -20,10 +23,10 @@ async function fetchRegister(username, password) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                user: {
-                    username,
-                    password
-                }
+                username, password, address1Billing,
+                address1Shipping, address2Billing, address2Shipping, zipBilling, zipShipping,
+                cityBilling, cityShipping, stateBilling, stateShipping, phoneBilling, phoneShipping,
+                emailBilling, emailShipping, firstName, lastName
             })
         })
             .then(response => response.json())
@@ -57,37 +60,7 @@ async function fetchLogin(username, password) {
             return result;
         })
         .catch(console.error)
-}
-
-
-//Return everything in the catalog
-//get all items ?
-async function fetchCatalog() {
-    try {
-        const allItemsJson = await fetch(`${BASE_URL}/items`);
-        const allItems = await allItemsJson.json();
-        localStorage.setItem('allItems', JSON.stringify(allItems));
-        return allItems;
-    } catch (error) {
-        throw error;
-    }
-
-}
-
-
-//Return list of user's orders
-const fetchMyOrders = async (user) => {
-    const resp = await fetch(`/api/users/${user.username}/orders`,
-        {
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": "Bearer " + user.token
-            }
-        }
-    );
-    return await resp.json();
 };
-// Users front end API
 const fetchUsers = async () => {
     try {
         const resp = await fetch(`${BASE_URL}/users`, {
@@ -118,6 +91,37 @@ const getUserByUsername = async (username) => {
         throw error;
     }
 };
+
+// ***ITEMS***
+//Return everything in the catalog
+//get all items ?
+async function fetchCatalog() {
+    try {
+        const allItemsJson = await fetch(`${BASE_URL}/items`);
+        const allItems = await allItemsJson.json();
+        localStorage.setItem('allItems', JSON.stringify(allItems));
+        return allItems;
+    } catch (error) {
+        throw error;
+    }
+
+}
+
+// ***ORDERS***
+//Return list of user's orders
+const fetchMyOrders = async (user) => {
+    const resp = await fetch(`/api/users/${user.username}/orders`,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + user.token
+            }
+        }
+    );
+    return await resp.json();
+};
+
+
 
 //  ***Item Functions***
 const getAllItems = async () => {
@@ -272,6 +276,68 @@ const getCategoriesOfItem = async (id) => {
     return tempCategories
 };
 
+//////
+
+const createOrder = async (token, orderDetails, lineItems) => {
+    const orderResp = await fetch(`${BASE_URL}/orders`, {
+        headers: {
+            "Content-Type": "application/json",
+            "authorization": `Bearer ${token}`
+        },
+        body: {
+            lineItems, orderDetails
+        }
+    });
+    const newOrder = await orderResp.json();
+    return newOrder;
+
+};
+
+/// images
+function readStream(stream, encoding = "utf8") {
+    if (!stream.readable) {
+        console.error('not a readable stream')
+    } else {
+        stream.setEncoding(encoding);
+
+        return new Promise((resolve, reject) => {
+            let data = "";
+
+            stream.on("data", chunk => data += chunk);
+            stream.on("end", () => resolve(data));
+            stream.on("error", error => reject(error));
+        });
+    }
+}
+
+
+const saveStoreLogoImage = async (token, file) => {
+    //probably need to submit as formData
+    try {
+        const formData = new FormData();
+        formData.append("storeLogo", file);
+        console.log("running saveStoreLogo file: ", formData, "token: ", token);
+        const imageResp = await fetch(`${BASE_URL}/images/storeLogo`, {
+            method: "POST",
+            headers: {
+                "autorization": `Beaerer ${token}`
+            },
+            body: formData
+        });
+
+
+        // imageResp.formData().then(data=>{
+        //     console.log("data: ", data)
+        // }).catch(err=>{console.error(err)})
+        // const data = await readStream(imageResp.body);
+        console.log("imageResp", imageResp);
+        // imageResp.body.reader(data=>{console.log(data)})
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+
 
 module.exports = {
     fetchCatalog,
@@ -289,6 +355,8 @@ module.exports = {
     createCategory,
     updateCategory,
     removeCategory,
+    createOrder,
     getCategoriesOfItem,
+    saveStoreLogoImage,
     BASE_URL
 };

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Login from "./Login";
 
-const storeLogo = require("./StoreHeader.js");
+const storeLogo = require("./images/storeLogo.png");
 
 const StoreHeader = ({ cart, user, setUser }) => {
     //Store Logo (also home button) // Search Bar // My Account // My Orders // Cart
@@ -23,6 +23,9 @@ const StoreHeader = ({ cart, user, setUser }) => {
         e.preventDefault();
         navigate('/logout');
     };
+    const onClickRegister = () => {
+        navigate('/register');
+    }
     const displayLoginButton = () => {
         if (!!user) {
             return <div>
@@ -32,27 +35,27 @@ const StoreHeader = ({ cart, user, setUser }) => {
         }
         if (loginDisplay === "none") {
             return <div>
-                <Login displayLogin={loginDisplay} user={user} setUser={setUser} />
+                <Login displayLogin={loginDisplay} setDisplayLogin={setLoginDisplay} user={user} setUser={setUser} />
                 <button onClick={onClickLogin}>Login</button>
-                <button>Register</button>
+                <button onClick={onClickRegister} >Register</button>
             </div>
         } else {
-            return <div><Login displayLogin={loginDisplay} user={user} setUser={setUser} /></div>
+            return <div><Login displayLogin={loginDisplay} setDisplayLogin={setLoginDisplay} user={user} setUser={setUser} /></div>
         }
     }
 
 
 
     return (<div className="store-header">
-        <img src={storeLogo} alt="Logo" />
+        <img className="store-logo" src={storeLogo} alt="Logo" />
         <div>
             <input type="text" />
             <button>Search</button>
         </div>
         {displayLoginButton()}
-        <div>
+        <Link to="./orders">
             Order History
-        </div>
+        </Link>
         <Link to="./cart">
             Cart {printCartQuantity()}
         </Link>

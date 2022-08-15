@@ -47,12 +47,20 @@ async function createTables() {
     admin BOOLEAN DEFAULT false,
     "firstName" VARCHAR(255),
     "lastName" VARCHAR(255),
-    email VARCHAR(255),
-    "phoneNumber" VARCHAR(255),
-    address VARCHAR(255),
-    address2 VARCHAR(255),
-    zip VARCHAR(255),
-    state VARCHAR(255)
+    "emailBilling" VARCHAR(255),
+    "phoneBilling" VARCHAR(255),
+    "address1Billing" VARCHAR(255),
+    "address2Billing" VARCHAR(255),
+    "zipBilling" VARCHAR(255),
+    "stateBilling" VARCHAR(255),
+    "cityBilling" VARCHAR(255),
+    "emailShipping" VARCHAR(255),
+    "phoneShipping" VARCHAR(255),
+    "address1Shipping" VARCHAR(255),
+    "address2Shipping" VARCHAR(255),
+    "zipShipping" VARCHAR(255),
+    "stateShipping" VARCHAR(255),
+    "cityShipping" VARCHAR(255)
   );`);
     console.log('creating items..');
     await client.query(`CREATE TABLE items (
@@ -73,13 +81,19 @@ async function createTables() {
     await client.query(`CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     "userId" INT REFERENCES users(id),
-    attn VARCHAR(255),
-    email VARCHAR(255),
+    "attnBilling" VARCHAR(255),
+    "attnShipping" VARCHAR(255),
+    "emailBilling" VARCHAR(255),
+    "emailShipping" VARCHAR(255),
     "phoneNumber" VARCHAR(255),
-    address VARCHAR(255),
-    address2 VARCHAR(255),
-    zip VARCHAR(255),
-    state VARCHAR(255)
+    "address1Billing" VARCHAR(255),
+    "address1Shipping" VARCHAR(255),
+    "address2Billing" VARCHAR(255),
+    "address2Shipping" VARCHAR(255),
+    "zipBilling" VARCHAR(255),
+    "zipShipping" VARCHAR(255),
+    "stateShipping" VARCHAR(255),
+    "stateBilling" VARCHAR(255)
   );`);
     console.log('creating lineItems..');
     await client.query(`CREATE TABLE "lineItems" (
@@ -104,6 +118,12 @@ async function createTables() {
     "itemId" INT REFERENCES items(id),
     "categoryId" INT REFERENCES categories(id)
   );`);
+  console.log('creating images..');
+    await client.query(`CREATE TABLE "images" (
+    id SERIAL PRIMARY KEY,
+    "name" VARCHAR(255),
+    "categoryId" INT REFERENCES categories(id)
+  );`);
 
 
 
@@ -125,9 +145,21 @@ async function createInitialUsers() {
   try {
 
     const usersToCreate = [
-      { username: 'admin', password: 'password', email: 'admin@localhost.com' },
-      { username: 'sandra', password: 'sandra123', email: 'sandra@gmail.com' },
-      { username: 'glamgal', password: 'glamgal123', email: 'glamgal@gmail.com' },
+      { username: 'admin', password: 'password', emailShipping: 'admin@localhost.com', emailBilling: "admin@localhost.com", 
+      address1Billing: "test",
+      address1Shipping: "test", address2Billing: "test", address2Shipping: "test", zipBilling: "test", zipShipping: "test",
+      cityBilling: "test", cityShipping: "test", stateBilling: "test", stateShipping: "test", phoneBilling: "test", phoneShipping: "test",
+       firstName: "test", lastName: "test" },
+      { username: 'sandra', password: 'sandra123', emailShipping: 'sandra@gmail.com', emailBilling: 'sandra@gmail.com',
+      address1Billing: "test",
+      address1Shipping: "test", address2Billing: "test", address2Shipping: "test", zipBilling: "test", zipShipping: "test",
+      cityBilling: "test", cityShipping: "test", stateBilling: "test", stateShipping: "test", phoneBilling: "test", phoneShipping: "test",
+       firstName: "test", lastName: "test" },
+      { username: 'glamgal', password: 'glamgal123', emailShipping: 'glamgal@gmail.com', emailBilling: 'glamgal@gmail.com',
+      address1Billing: "test",
+      address1Shipping: "test", address2Billing: "test", address2Shipping: "test", zipBilling: "test", zipShipping: "test",
+      cityBilling: "test", cityShipping: "test", stateBilling: "test", stateShipping: "test", phoneBilling: "test", phoneShipping: "test",
+       firstName: "test", lastName: "test" },
     ]
     const users = await Promise.all(usersToCreate.map(createUser));
 
@@ -195,13 +227,28 @@ async function createInitialOrders() {
   console.log('Starting to create orders...');
   try {
     // itemNumber, description, name, cost, price, onHand
-    const ordersToCreate = [
-      { userId: 1, attn: "Jane Doe", email: "jon@doe.com", phoneNumber: '77777777', address: "a string", address2: "a string", zip: "a string", state: "a string" },
-      { userId: 1, attn: "Jane Doe", email: "jon@doe.com", phoneNumber: '77777777', address: "a string", address2: "a string", zip: "a string", state: "a string" },
-      { userId: 1, attn: "Jane Doe", email: "jon@doe.com", phoneNumber: '77777777', address: "a string", address2: "a string", zip: "a string", state: "a string" },
-      { userId: 1, attn: "Jane Doe", email: "jon@doe.com", phoneNumber: '77777777', address: "a string", address2: "a string", zip: "a string", state: "a string" },
-      { userId: 1, attn: "Jane Doe", email: "jon@doe.com", phoneNumber: '77777777', address: "a string", address2: "a string", zip: "a string", state: "a string" }
-    ]
+    const template = ['1','2','3','4','5'];
+    const ordersToCreate = template.map(id => {
+      return {
+        userId: "1",
+
+        address1Shipping: "8364 gulfair dr",
+        address2Shipping: "",
+        zipShipping: "28836",
+        stateShipping: "FL",
+        cityShipping: "Jacksonville",
+        emailShipping: "",
+        phoneShipping: "",
+        address1Billing: "8364 gulfair dr",
+        address2Billing: "",
+        zipBilling: "28836",
+        stateBilling: "FL",
+        cityBilling: "Jacksonville",
+        emailBilling: "",
+        phoneBilling: ""
+
+      }
+    })
     const orders = await Promise.all(ordersToCreate.map(createOrder));
 
     console.log('orders created:');
@@ -288,12 +335,12 @@ async function rebuildDB() {
     await createTables();
     await createInitialUsers();
     await createInitialItems();
-    await createInitialOrders();
+    // await createInitialOrders();
     await createInitialLineItems();
     await createInitialCategories();
     await createInitialItemCategories();
   } catch (error) {
-    console.log('Error during rebuildDB')
+    console.log('Error during rebuildDB');
     throw error;
   }
 }

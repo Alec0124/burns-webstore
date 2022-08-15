@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+
 const Checkout = ({ cart, user, setCart }) => {
     const navigate = useNavigate();
     if (!user) { navigate("/register"); }
 
     const printTotal = () => {
         let total = 0;
-        cart.forEach(item=>{
+        cart.forEach(item => {
             const lnPrice = item.price * item.quantity;
             total = total + lnPrice;
         });
@@ -21,7 +22,28 @@ const Checkout = ({ cart, user, setCart }) => {
     const onClickCheckout = (e) => {
         e.preventDefault();
         const isTransactionSuccess = true;
-        if(!!isTransactionSuccess) {
+        if (!!isTransactionSuccess) {
+            console.log('cart: ', cart);
+            // const orderDetails = {
+            //     userId:user.id,
+            //     attnShipping,
+            //     emailShipping,
+            //     phoneShipping,
+            //     address1Shipping,
+            //     address2Shipping,
+            //     zipShipping,
+            //     stateShipping,
+            //     attnBilling,
+            //     emailBilling,
+            //     phoneBilling,
+            //     address1Billing,
+            //     address2Billing,
+            //     zipBilling,
+            //     stateBilling
+
+
+            // }
+            // createOrder(user.token,);
             setCart([]);
             localStorage.removeItem("cart");
             navigate('/home');
@@ -40,7 +62,7 @@ const Checkout = ({ cart, user, setCart }) => {
                     <button onClick={onClickViewCart}>View Cart</button>
                     <button onClick={onClickCheckout}>Checkout</button>
                 </div>
-                
+
             </form>
         </div>
     )

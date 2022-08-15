@@ -31,7 +31,7 @@
 /* Desktops and laptops ----------- */
 @media only screen and (min-width : 1224px) {
   /* Styles */
-  
+
   .admin-app {
     text-align: center;
     display: grid;
@@ -39,12 +39,14 @@
     grid-template-rows: 1fr;
     background-color: darkgrey;
   }
+
   .admin-nav {
     grid-area: 1 / 1 / 2 / 2;
     display: flex;
     flex-flow: column nowrap;
     height: 100%;
   }
+
   .admin-nav-cat {
     border: 1px solid black;
     flex: 1 0 50px;
@@ -53,45 +55,59 @@
     background-color: navy;
     color: white;
   }
+
   .selected {
     background-color: darkcyan;
   }
+
   .selected:hover {
     background-color: darkcyan;
     color: white;
   }
+
   .admin-nav-cat:hover {
     background-color: cornflowerblue;
     color: black;
   }
+
   .selected:hover {
     background-color: darkcyan;
     color: white;
   }
+
   .admin-body {
     grid-area: 1 / 2 / 2 / 3;
     display: flex;
     flex-flow: row nowrap;
     justify-content: center;
   }
+
   .admin-descriptions {
     flex: 1 0 25%;
     background-color: white;
   }
+
   .admin-fields {
     flex: 1 0 25%;
     background-color: beige;
   }
+
   .admin-values {
     flex: 1 0 25%;
     background-color: lightgray;
   }
-  .admin-values, .admin-fields, .admin-descriptions {
+
+  .admin-values,
+  .admin-fields,
+  .admin-descriptions {
     display: flex;
     flex-flow: column nowrap;
     padding-top: 20px;
   }
-  .admin-values > .row, .admin-fields > .row, .admin-descriptions > .row {
+
+  .admin-values>.row,
+  .admin-fields>.row,
+  .admin-descriptions>.row {
     flex: 1 0 30px;
   }
 
@@ -107,31 +123,37 @@
     padding-top: 20px;
     padding-left: 5px;
   }
-  .item-master > .row {
+
+  .item-master>.row {
     flex: 0 0 20px;
     display: flex;
     flex-flow: row nowrap;
     background-color: aliceblue;
     border-radius: 12px;
     border: solid 1px black;
-    padding: 2px; 
+    padding: 2px;
   }
-  .item-master > .row > button {
+
+  .item-master>.row>button {
     padding: 4px;
     flex: 0 0 100px;
     font-weight: bold;
   }
-  .item-master > .row > button.inactive {
+
+  .item-master>.row>button.inactive {
     background-color: darkgray;
     color: lightgray;
   }
+
   .search-icon {
     padding: 4px;
     background-color: white;
   }
+
   .search-icon:hover {
     background-color: darkcyan;
   }
+
   .Loading {
     position: absolute;
     top: 250px;
@@ -145,6 +167,7 @@
     padding-top: 70px;
     font-size: 24pt;
   }
+
   .search-dropdown {
     position: absolute;
     background-color: white;
@@ -155,13 +178,16 @@
     border: 1px solid black;
     z-index: 100;
   }
+
   .search-dropdown-row {
     padding: 5px;
     /* z-index: 10; */
   }
+
   .search-dropdown-row:hover {
     background-color: blue;
   }
+
   .list-exchange {
     position: absolute;
     width: 800px;
@@ -174,17 +200,22 @@
     display: flex;
     flex-flow: row nowrap;
   }
-  .category-selected, .category-list {
+
+  .category-selected,
+  .category-list {
     border: 1px solid navy;
     flex: 1 0 200px;
   }
-  .category-list > .row:hover {
+
+  .category-list>.row:hover {
     background-color: green;
   }
-  .category-selected > .row:hover {
+
+  .category-selected>.row:hover {
     background-color: red;
   }
-  .list-view{
+
+  .list-view {
     position: absolute;
     width: 1000px;
     height: 400px;
@@ -193,16 +224,20 @@
     display: block;
     z-index: 10;
   }
-  .item-search > .row {
+
+  .item-search>.row {
     color: black;
   }
+
   .table-header {
     background-color: darkgreen;
     color: white;
   }
+
   .table-cell {
     border: 1px solid black;
   }
+
   .pop-up-dialog {
     font-size: 16pt;
     position: absolute;
@@ -211,18 +246,24 @@
     z-index: 10;
     background-color: antiquewhite;
     width: 800px;
-    height:250px;
-    padding-top:150px;
+    height: 250px;
+    padding-top: 150px;
   }
-  .pop-up-dialog > button {
+
+  .pop-up-dialog>button {
     padding: 2px;
     margin: 5px;
   }
+
   a:hover {
     background-color: cyan;
     color: green;
   }
-  a, a:hover, a:focus, a:active {
+
+  a,
+  a:hover,
+  a:focus,
+  a:active {
     text-decoration: none;
     color: inherit;
   }
@@ -233,6 +274,7 @@
     grid-template-columns: 1400px;
     grid-template-rows: 50px, 50px, 800px, 50px;
   }
+
   .store-content {
     overflow: scroll;
     display: flex;
@@ -243,6 +285,7 @@
     justify-content: flex-start;
     align-items: flex-start;
   }
+
   .thumbnail {
     display: flex;
     flex-flow: column nowrap;
@@ -253,28 +296,33 @@
     align-items: center;
 
   }
-  .thumbnail > img {
+
+  .thumbnail>img {
     width: 200px;
-    border: 3px solid black; 
+    border: 3px solid black;
     flex-basis: 200px;
   }
+
   .nav-menu {
     grid-area: 2 / 1 / 3 / 2;
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
   }
+
   .store-header {
     grid-area: 1 / 1 / 2 / 2;
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
   }
+
   .store-footer {
     grid-area: 4 / 1 / 5 / 2;
     display: flex;
     flex-flow: row nowrap;
   }
+
   .store-item {
     overflow: scroll;
     display: flex;
@@ -285,11 +333,11 @@
     justify-content: flex-start;
     align-items: center;
   }
+
   .cart {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 200px 1fr 100px;
     grid-area: 3 / 1 / 4 / 2;
     /* width: 100; */
     height: 700px;
@@ -297,6 +345,71 @@
     /* padding: 100px; */
   }
 
+  .cart-table {
+    grid-area: 2 / 2 / 3 / 5;
+  }
+
+  .cart-buttons {
+    grid-area: 3 / 2 / 4 / 5;
+  }
+
+  .cart-ship {
+    grid-area: 1 / 2 / 2 / 3;
+  }
+
+  .cart-bill {
+
+    grid-area: 1 / 4 / 2 / 5;
+  }
+
+  .store-home {
+    background-color: blue;
+    grid-area: 3 / 1 / 4 / 2;
+    height: 700px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 300px 1fr;
+  }
+
+  .register-popout {
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    position: absolute;
+    background-color: lightblue;
+    width: 800px;
+    padding: 15px;
+    border: double 5px navy;
+    border-radius: 12px;
+    left: 300px;
+    
+  }
+  .register {
+    height: 700px;
+    margin-top: 120px;
+  }
+  .register-address {
+    
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    margin: 15px 60px;
+    padding: 15px 0px;
+    border: dotted 2px orange;
+  }
+  .errors {
+    color: red;
+  }
+  .store-logo {
+    width: 150px;
+    height: 50px;
+  }
+  .search-bar {
+    width: 150px;
+    height: 25px;
+  }
+  .store-header > a {
+    flex-basis: 200px;
+  }
 }
 
 /* Large screens ----------- */

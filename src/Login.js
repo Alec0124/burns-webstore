@@ -5,14 +5,15 @@ import { fetchLogin } from './api';
 
 
 
-const Login = ({user, setUser, displayLogin}) => {
+const Login = ({user, setUser, displayLogin, setDisplayLogin}) => {
     const navigate = useNavigate();
     if(!!user) {
         navigate("/home");
     }
     //states
-    const [username, setUsername] = useState();
-    const [password, setPassword] = useState();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     //onChange
     const onChangeUsername = (e) => {
         setUsername(e.target.value);
@@ -21,9 +22,9 @@ const Login = ({user, setUser, displayLogin}) => {
         setPassword(e.target.value);
     };
     //onClick
-    const onClickCheckCookie = (e) => {
-        console.log(localStorage.getItem('user'));
-    };
+    const onClickCancel = (e)=> {
+        setDisplayLogin("none");
+    }
 
     const onClickLogin = async (e) => {
         e.preventDefault();
@@ -63,9 +64,7 @@ const Login = ({user, setUser, displayLogin}) => {
 
 
     return (<div className="Login" style={{display: displayLogin}}>
-        <div className="row">
-            Print errors here
-        </div>
+        
         <div className="row">
             Username:
             <input type="text" onChange={onChangeUsername} />
@@ -74,9 +73,12 @@ const Login = ({user, setUser, displayLogin}) => {
             Password:
             <input type="password" onChange={onChangePassword} />
         </div>
+        <div className="errors">
+            {errorMessage}
+        </div>
         <div className="row">
             <input type="submit" value="login" onClick={onClickLogin} />
-            <button onClick={onClickCheckCookie}>Check cookie</button>
+            <button onClick={onClickCancel}>Cancel</button>
         </div>
     </div>);
 };

@@ -15,11 +15,23 @@ const { createUser, loginUser, getAllUsers, client, getUserByUsername, updateUse
 
 const PORT = 5000;
 const express = require('express');
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'src/images/')
+    },
+    filename: function (req, file, cb) {
+    //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + ".png" )
+    }
+  })
+const upload = multer({ storage: storage });
 const server = express();
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const orders = require('./db/orders');
+const fs = require("fs");
+
 // const { rebuildDB } = require('./db/seedData');
 
 // rebuildDB();
@@ -36,10 +48,12 @@ const itemsRouter = express.Router();
 const lineItemsRouter = express.Router();
 const categoriesRouter = express.Router();
 const itemCategoriesRouter = express.Router();
+const imagesRouter = express.Router();
 
 server.use('/api', apiRouter);
 apiRouter.use('/users', usersRouter);
 apiRouter.use('/orders', ordersRouter);
+apiRouter.use('/images', imagesRouter);
 apiRouter.use('/items', itemsRouter);
 apiRouter.use('/lineItems', lineItemsRouter);
 apiRouter.use('/categories', categoriesRouter);
@@ -177,7 +191,10 @@ apiRouter.get('/verify', verifyTokenReturn);
 // Create a new user. Require username and password, and hash password before saving user to DB. Require all passwords to be at least 8 characters long.
 // BROKEN
 usersRouter.post('/register', async (req, res, next) => {
-    const { username, password, admin, firstName, lastName, email, phoneNumber, address, address2, zip, state } = req.body.user;
+    const { username, password, address1Billing,
+        address1Shipping, address2Billing, address2Shipping, zipBilling, zipShipping,
+        cityBilling, cityShipping, stateBilling, stateShipping, phoneBilling, phoneShipping,
+        emailBilling, emailShipping, firstName, lastName } = req.body;
 
     try {
 
@@ -186,7 +203,12 @@ usersRouter.post('/register', async (req, res, next) => {
         if (!!_user) {
             next(respError('userExistsError', 'A user by that name already exists'));
         };
-        const user = await createUser({ username, password, admin, firstName, lastName, email, phoneNumber, address, address2, zip, state });
+        const user = await createUser({
+            username, password, address1Billing,
+            address1Shipping, address2Billing, address2Shipping, zipBilling, zipShipping,
+            cityBilling, cityShipping, stateBilling, stateShipping, phoneBilling, phoneShipping,
+            emailBilling, emailShipping, firstName, lastName
+        });
         const token = jwt.sign({ id: user.id, username }, JWT_SECRET, { expiresIn: '1w' });
         res.send({ message: 'register user success!', user, token });
         next();
@@ -303,19 +325,46 @@ usersRouter.patch('/:userId', verifyToken, async (req, res, next) => {
 //creates a new Order; if token provided then assign creator id
 //pass in optional "lineItems" array to have line items added to new order. NOT IMPLEMENTED
 ordersRouter.post('', verifyToken, async (req, res, next) => {
-    const { attn, email, phoneNumber, address, address2, zip, state, lineItems } = req.body;
-    let userId;
-    if (!!req.user) {
-        userId = req.user.id;
-    } else {
-        userId = false;
-    }
+    const { orderDetails, lineItems } = req.body;
+    const { userId,
+        attnShipping,
+        emailShipping,
+        phoneShipping,
+        address1Shipping,
+        address2Shipping,
+        zipShipping,
+        stateShipping,
+        attnBilling,
+        emailBilling,
+        phoneBilling,
+        address1Billing,
+        address2Billing,
+        zipBilling,
+        stateBilling } = orderDetails;
+
 
     try {
 
-        const newOrder = await createOrder({ userId, attn, email, phoneNumber, address, address2, zip, state });
+        const newOrder = await createOrder({
+            userId,
+            attnShipping,
+            emailShipping,
+            phoneShipping,
+            address1Shipping,
+            address2Shipping,
+            zipShipping,
+            stateShipping,
+            attnBilling,
+            emailBilling,
+            phoneBilling,
+            address1Billing,
+            address2Billing,
+            zipBilling,
+            stateBilling
+        });
 
         // 
+        //
         if (!lineItems || !Array.isArray(lineItems)) {
             res.send({ newOrder });
             next();
@@ -329,7 +378,7 @@ ordersRouter.post('', verifyToken, async (req, res, next) => {
             newOrder.lineItems = newLineItems;
             res.send(newOrder);
             next();
-        }
+        };
 
         // res.send({ message: 'create order success!', newOrder });
         // next();
@@ -1002,6 +1051,28 @@ itemCategoriesRouter.delete('/:itemCategoryId', verifyToken, async (req, res, ne
     }
     catch ({ name, message }) {
         next({ name, message })
+    }
+
+});
+
+// *** IMAGES ***
+imagesRouter.post('/storeLogo', upload.single("storeLogo"), async (req, res, next) => {
+    console.log("LUCIE")
+    try {
+        console.log('posting to storeLogo')
+        const file = req.file;
+
+        console.log("req.body: ", file);
+
+        // fs.writeFile("./src/images/storeLogo.png", file.buffer, (err) => {
+        //     console.error(err);
+        // });
+
+        
+        res.send({body:file});
+    } catch (err) {
+        console.error(err);
+        next();
     }
 
 });

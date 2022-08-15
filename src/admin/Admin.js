@@ -101,7 +101,7 @@ function Admin() {
         </div>
 
         <Routes>
-          <Route exact path="/" element={<GeneralAdmin setSelectedCat={setSelectedCat} />} />
+          <Route exact path="/" element={<GeneralAdmin user={user} setSelectedCat={setSelectedCat} />} />
           <Route exact path="/logout" element={<Logout />} />
           <Route path="/item-master" element={<ItemMaster user={user} setSelectedCat={setSelectedCat} verifyToken={verifyTokenWrapper}/>} />
           <Route path="/categories" element={<Categories user={user} setSelectedCat={setSelectedCat} verifyToken={verifyTokenWrapper} />} />

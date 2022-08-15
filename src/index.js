@@ -4,7 +4,8 @@ import './App.css';
 import {
   BrowserRouter as Router,
   Route,
-  Routes
+  Routes,
+  Navigate
 } from "react-router-dom";
 import Webstore from './Webstore';
 import Admin from './admin/Admin';
@@ -15,6 +16,7 @@ root.render(
   <Router>
     <Routes>
       <Route path="/admin/*" element={<Admin />} />
+      <Route exact path="/" element={<Navigate to="/home" />} />
       <Route path="/*" element={<Webstore />} />
     </Routes>
   </Router>

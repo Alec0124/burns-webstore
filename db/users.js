@@ -3,8 +3,10 @@ const { client } = require("./client");
 const bcrypt = require('bcrypt');
 const { testFirstRow, insertQueryValuesString, respError } = require("./api");
 
-const createUser = async ({ username, password, email, firstName, 
-    lastName, phoneNumber, address, address2, zip, state }) => {
+const createUser = async ({ username, password, address1Billing,
+    address1Shipping, address2Billing, address2Shipping, zipBilling, zipShipping,
+    cityBilling, cityShipping, stateBilling, stateShipping, phoneBilling, phoneShipping,
+    emailBilling, emailShipping, firstName, lastName }) => {
 
     try {
         // const SALT_COUNT = 10;
@@ -19,11 +21,7 @@ const createUser = async ({ username, password, email, firstName,
                 value: password,
                 type: "string"
             },
-            {
-                name: "email",
-                value: email,
-                type: "string"
-            },
+            //start here, fill in below
             {
                 name: '"firstName"',
                 value: firstName,
@@ -35,28 +33,73 @@ const createUser = async ({ username, password, email, firstName,
                 type: "string"
             },
             {
-                name: '"phoneNumber"',
-                value: phoneNumber,
+                name: '"emailBilling"',
+                value: emailBilling,
                 type: "string"
             },
             {
-                name: "address",
-                value: address,
+                name: '"phoneBilling"',
+                value: phoneBilling,
                 type: "string"
             },
             {
-                name: "address2",
-                value: address2,
+                name: '"address1Billing"',
+                value: address1Billing,
                 type: "string"
             },
             {
-                name: "zip",
-                value: zip,
+                name: '"address2Billing"',
+                value: address2Billing,
                 type: "string"
             },
             {
-                name: "state",
-                value: state,
+                name: '"zipBilling"',
+                value: zipBilling,
+                type: "string"
+            },
+            {
+                name: '"stateBilling"',
+                value: stateBilling,
+                type: "string"
+            },
+            {
+                name: '"cityBilling"',
+                value: cityBilling,
+                type: "string"
+            },
+            {
+                name: '"emailShipping"',
+                value: emailShipping,
+                type: "string"
+            },
+            {
+                name: '"phoneShipping"',
+                value: phoneShipping,
+                type: "string"
+            },
+            {
+                name: '"address1Shipping"',
+                value: address1Shipping,
+                type: "string"
+            },
+            {
+                name: '"address2Shipping"',
+                value: address2Shipping,
+                type: "string"
+            },
+            {
+                name: '"zipShipping"',
+                value: zipShipping,
+                type: "string"
+            },
+            {
+                name: '"stateShipping"',
+                value: stateShipping,
+                type: "string"
+            },
+            {
+                name: '"cityShipping"',
+                value: cityShipping,
                 type: "string"
             }],
             "users" //this is the table name

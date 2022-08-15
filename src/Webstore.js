@@ -132,10 +132,10 @@ function Webstore() {
       <NavMenu setSelectedCategory={setSelectedCategory} selectedCategory={selectedCategory} categoryList={categoryList} />
       <Routes>
       <Route path="/logout" element={<Logout setUser={setUser} />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<Register user={user} setUser={setUser}/>} />
         <Route path="/login" element={<Login displayLogin="block" user={user} setUser={setUser} />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/cart" element={<Cart cart={cart} setCart={setCart} />} />
+        <Route path="/home" element={<Home contentItems={contentItems} />} />
+        <Route path="/cart" element={<Cart setUser={setUser} user={user} cart={cart} setCart={setCart} />} />
         <Route path="/checkout" element={<Checkout setCart={setCart} cart={cart} user={user} />} />
         <Route path="/item/:itemNumber" element={<Item contentItems={contentItems} cart={cart} setCart={setCart} />} />
         <Route path="/category/:id" element={<Category contentItems={contentItems} />} />

@@ -6,8 +6,26 @@ const { getLineItemsByOrder } = require("./lineItems");
 
 
 //creates order; line items attached seperately
-const createOrder = async ({ userId, attn, email, phoneNumber, 
-    address, address2, zip, state }) => {
+const createOrder = async ({
+    userId,
+    attnShipping,
+    emailShipping,
+    phoneShipping,
+    address1Shipping,
+    address2Shipping,
+    zipShipping,
+    stateShipping,
+    cityShipping,
+    attnBilling,
+    emailBilling,
+    phoneBilling,
+    address1Billing,
+    address2Billing,
+    zipBilling,
+    stateBilling,
+    cityBilling,
+
+}) => {
     const [valuesArray, queryString] = insertQueryValuesString([
         {
             name: '"userId"',
@@ -15,40 +33,86 @@ const createOrder = async ({ userId, attn, email, phoneNumber,
             type: 'string'
         },
         {
-            name: "attn",
-            value: attn,
+            name: "attnShipping",
+            value: attnShipping,
             type: 'string'
         },
         {
-            name: "email",
-            value: email,
+            name: "emailShipping",
+            value: emailShipping,
             type: 'string'
         },
         {
-            name: '"phoneNumber"',
-            value: phoneNumber,
+            name: '"phoneShipping"',
+            value: phoneShipping,
             type: 'string'
         },
         {
-            name: "address",
-            value: address,
+            name: "address1Shipping",
+            value: address1Shipping,
             type: 'string'
         },
         {
-            name: "address2",
-            value: address2,
+            name: "address2Shiping",
+            value: address2Shipping,
             type: 'string'
         },
         {
-            name: "zip",
-            value: zip,
+            name: "zipShipping",
+            value: zipShipping,
             type: 'string'
         },
         {
-            name: "state",
-            value: state,
+            name: "stateShipping",
+            value: stateShipping,
+            type: 'string'
+        },
+        {
+            name: "cityShipping",
+            value: cityShipping,
+            type: 'string'
+        },
+        {
+            name: "attnBilling",
+            value: attnBilling,
+            type: 'string'
+        },
+        {
+            name: "emailBilling",
+            value: emailBilling,
+            type: 'string'
+        },
+        {
+            name: '"phoneBilling"',
+            value: phoneBilling,
+            type: 'string'
+        },
+        {
+            name: "address1Billing",
+            value: address1Billing,
+            type: 'string'
+        },
+        {
+            name: "address2Billing",
+            value: address2Billing,
+            type: 'string'
+        },
+        {
+            name: "zipBilling",
+            value: zipBilling,
+            type: 'string'
+        },
+        {
+            name: "stateBilling",
+            value: stateBilling,
+            type: 'string'
+        },
+        {
+            name: "cityBilling",
+            value: cityBilling,
             type: 'string'
         }
+        
     ], "orders");
 
 
@@ -72,7 +136,7 @@ const getAllOrders = async () => {
     console.log('running getAllOrders..');
 
     try {
-        const allOrders = await Promise.all( await getNestedTable("orders", null, "lineItems", getLineItemsByOrder, null));
+        const allOrders = await Promise.all(await getNestedTable("orders", null, "lineItems", getLineItemsByOrder, null));
         // const lineItems = await getLineItemsByOrder(id).rows;
         // testFirstRow(lineItems);
         return allOrders;
