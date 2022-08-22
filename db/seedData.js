@@ -19,7 +19,9 @@ async function dropTables() {
     // drop all tables, in the correct order
     await client.query(`
   DROP TABLE IF EXISTS "itemCategories";
+  DROP TABLE IF EXISTS "itemImages";
   DROP TABLE IF EXISTS categories;
+  DROP TABLE IF EXISTS images;
   DROP TABLE IF EXISTS "lineItems";
   DROP TABLE IF EXISTS orders;
   DROP TABLE IF EXISTS items;
@@ -121,8 +123,15 @@ async function createTables() {
   console.log('creating images..');
     await client.query(`CREATE TABLE "images" (
     id SERIAL PRIMARY KEY,
-    "name" VARCHAR(255),
-    "categoryId" INT REFERENCES categories(id)
+    "name" VARCHAR(255)
+  );`);
+  console.log('creating itemImages..');
+    await client.query(`CREATE TABLE "itemImages" (
+    id SERIAL PRIMARY KEY,
+    "itemId" INT REFERENCES items(id),
+    "imageId" INT REFERENCES images(id),
+    "itemNumber" VARCHAR(255),
+    type VARCHAR(255)
   );`);
 
 
@@ -178,7 +187,7 @@ async function createInitialItems() {
   try {
 
     const itemsToCreate = [
-      { itemNumber: 'ITEM1', description: 'Soaring through the skies above a swirling cloud base, the Power Girl Premium Format Figure measures 25” tall. She poses powerfully here, flexing her muscles in a moment of calm between battles.', name: 'Power Girl, cost: 1.23, price: 350' },
+      { itemNumber: 'ITEM1', description: 'Soaring through the skies above a swirling cloud base, the Power Girl Premium Format Figure measures 25” tall. She poses powerfully here, flexing her muscles in a moment of calm between battles.', name: 'Power Girl', cost: 1.23, price: 350 },
       { itemNumber: 'ITEM2', description: 'Going back to the origins of our favorite superheroes, Hot Toys is bringing The Origins Collection which takes inspiration from the pages of classic Marvel Comics', name: 'Iron Man', cost: 1.23, price: 247 },
       { itemNumber: 'ITEM3', description: 'Famous for his superhuman strength and indestructible shield, Steve Rogers finds himself called into action to complete a mission with the universe’s entire existence on the line.', name: 'Captain America', cost: 1.23, price: 320 },
       { itemNumber: 'ITEM4', description: 'The Superman: The Movie Figure measures 20.5” tall, lovingly crafted in the iconic likeness of actor Christopher Reeve as Superman. His portrait features stunning blue eyes, and the signature kiss curl in his hair.', name: 'Superman', cost: 1.23, price: 417 },
@@ -202,86 +211,66 @@ async function createInitialItems() {
   }
 };
 
-// async function createInitialItems() {
-//   console.log('Starting to create items...');
+
+// async function createInitialOrders() {
+//   console.log('Starting to create orders...');
 //   try {
 //     // itemNumber, description, name, cost, price, onHand
-//     const itemsToCreate = [
-//       { itemNumber: 'ITEM1', description: 'an item, yay', name: 'my item', cost: 1.00, price: 2.00, onHand: 5 },
-//       { itemNumber: 'ITEM2', description: 'an item, yay', name: 'my item', cost: 1.00, price: 2.00, onHand: 5 },
-//       { itemNumber: 'ITEM3', description: 'an item, yay', name: 'my item', cost: 1.00, price: 2.00, onHand: 5 },
-//       { itemNumber: 'ITEM4', description: 'an item, yay', name: 'my item', cost: 1.00, price: 2.00, onHand: 5 },
-//       { itemNumber: 'ITEM5', description: 'an item, yay', name: 'my item', cost: 1.00, price: 2.00, onHand: 5 },
-//     ]
-//     const items = await Promise.all(itemsToCreate.map(createItem));
+//     const template = ['1','2','3','4','5'];
+//     const ordersToCreate = template.map(id => {
+//       return {
+//         userId: "1",
 
-//     console.log('items created:');
-//     console.log(items);
+//         address1Shipping: "8364 gulfair dr",
+//         address2Shipping: "",
+//         zipShipping: "28836",
+//         stateShipping: "FL",
+//         cityShipping: "Jacksonville",
+//         emailShipping: "",
+//         phoneShipping: "",
+//         address1Billing: "8364 gulfair dr",
+//         address2Billing: "",
+//         zipBilling: "28836",
+//         stateBilling: "FL",
+//         cityBilling: "Jacksonville",
+//         emailBilling: "",
+//         phoneBilling: ""
+
+//       }
+//     })
+    // const orders = await Promise.all(ordersToCreate.map(createOrder));
+
+  //   console.log('orders created:');
+  //   console.log(orders);
+  // } catch (error) {
+  //   console.error('Error creating users!');
+  //   throw error;
+  // }
+// };
+
+// async function createInitialLineItems() {
+//   console.log('Starting to create LineItems...');
+//   try {
+//     // itemNumber, description, name, cost, price, onHand
+//     const lineItemsToCreate = [
+//       { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
+//       { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
+//       { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
+//       { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
+//       { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
+//       { itemId: '1', orderId: '2', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
+//       { itemId: '1', orderId: '2', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
+//       { itemId: '1', orderId: '2', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" }
+//     ];
+//     const lineItems = await Promise.all(lineItemsToCreate.map(createLineItem));
+
+//     console.log('lineItems created:');
+//     console.log(lineItems);
 //   } catch (error) {
-//     console.error('Error creating users!');
+//     console.error('Error creating lineItems!');
 //     throw error;
 //   }
 // };
-
-async function createInitialOrders() {
-  console.log('Starting to create orders...');
-  try {
-    // itemNumber, description, name, cost, price, onHand
-    const template = ['1','2','3','4','5'];
-    const ordersToCreate = template.map(id => {
-      return {
-        userId: "1",
-
-        address1Shipping: "8364 gulfair dr",
-        address2Shipping: "",
-        zipShipping: "28836",
-        stateShipping: "FL",
-        cityShipping: "Jacksonville",
-        emailShipping: "",
-        phoneShipping: "",
-        address1Billing: "8364 gulfair dr",
-        address2Billing: "",
-        zipBilling: "28836",
-        stateBilling: "FL",
-        cityBilling: "Jacksonville",
-        emailBilling: "",
-        phoneBilling: ""
-
-      }
-    })
-    const orders = await Promise.all(ordersToCreate.map(createOrder));
-
-    console.log('orders created:');
-    console.log(orders);
-  } catch (error) {
-    console.error('Error creating users!');
-    throw error;
-  }
-};
-
-async function createInitialLineItems() {
-  console.log('Starting to create LineItems...');
-  try {
-    // itemNumber, description, name, cost, price, onHand
-    const lineItemsToCreate = [
-      { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
-      { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
-      { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
-      { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
-      { itemId: '1', orderId: '1', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
-      { itemId: '1', orderId: '2', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
-      { itemId: '1', orderId: '2', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" },
-      { itemId: '1', orderId: '2', quantity: 2, cost: 1.00, price: 2.00, name: "an item", description: "an item" }
-    ];
-    const lineItems = await Promise.all(lineItemsToCreate.map(createLineItem));
-
-    console.log('lineItems created:');
-    console.log(lineItems);
-  } catch (error) {
-    console.error('Error creating lineItems!');
-    throw error;
-  }
-};
 
 async function createInitialCategories() {
   console.log('Starting to create categories...');
@@ -310,10 +299,16 @@ async function createInitialItemCategories() {
       { itemId:1, categoryId:1 },
       { itemId:2, categoryId:1 },
       { itemId:3, categoryId:1 },
-      { itemId:4, categoryId:3 },
-      { itemId:5, categoryId:2 },
-      { itemId:1, categoryId:2 },
-      { itemId:2, categoryId:2 }
+      { itemId:4, categoryId:2 },
+      { itemId:5, categoryId:1 },
+      { itemId:6, categoryId:1 },
+      { itemId:7, categoryId:1 },
+      { itemId:8, categoryId:1 },
+      { itemId:9, categoryId:1 },
+      { itemId:10, categoryId:2 },
+      { itemId:11, categoryId:1 },
+      { itemId:12, categoryId:1 }
+
     ];
     const itemCategories = await Promise.all(itemCategoriesToCreate.map(createItemCategory));
 
@@ -336,9 +331,10 @@ async function rebuildDB() {
     await createInitialUsers();
     await createInitialItems();
     // await createInitialOrders();
-    await createInitialLineItems();
+    // await createInitialLineItems();
     await createInitialCategories();
     await createInitialItemCategories();
+    console.log("Building DB complegte.")
   } catch (error) {
     console.log('Error during rebuildDB');
     throw error;

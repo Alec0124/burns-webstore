@@ -8,5 +8,7 @@ module.exports = {
   ...require('./lineItems'),
   ...require('./categories'),
   ...require('./itemCategories'),
-  ...require('./api')
+  ...require('./api'),
+  ...require('./itemImages'),
+  ...require('./images')
 }

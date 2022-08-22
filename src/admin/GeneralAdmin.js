@@ -13,24 +13,23 @@ const GeneralAdmin = ({ user, setSelectedCat, verifyToken }) => {
   //states
   const [logoImage, setLogoImage] = useState(storeLogo);
   const [logoImageFile, setLogoImageFile] = useState(null);
+  const [storeLogoSaved, setStoreLogoSaved] = useState(false);
 
   //funtions
-
   const onClickSaveChanges = async (e) => {
     e.preventDefault();
     await saveStoreLogoImage(user.token, logoImageFile);
+    setStoreLogoSaved(true);
+    document.getElementById("general-admin-form").reset();
   }
 
   const onChangeLogo = (e) => {
     const file = e.target.files[0];
-    const namedFile = new File([file], "storeLogo.jpg")
+    const namedFile = new File([file], "storeLogo.jpg");
     setLogoImageFile(namedFile);
-    const newImg = URL.createObjectURL(file)
+    const newImg = URL.createObjectURL(file);
     setLogoImage(newImg);
-
-    // reader.( (e)=>{
-    //   console.log("readerResult: ", e.target.result);
-    // })
+    setStoreLogoSaved(false);
   };
   const mapDescriptionRows = (row) => {
 
@@ -53,7 +52,7 @@ const GeneralAdmin = ({ user, setSelectedCat, verifyToken }) => {
     </div>)
   };
   const printSaveChangesButton = () => {
-    if (logoImage !== storeLogo) {
+    if (logoImage !== storeLogo && storeLogoSaved === false) {
       return (<button onClick={onClickSaveChanges}>Save Changes</button>)
     } else {
       return
@@ -83,7 +82,7 @@ const GeneralAdmin = ({ user, setSelectedCat, verifyToken }) => {
 
 
   return (
-    <form method="post" encType="multipart/form-data" className="admin-body">
+    <form method="post" id="general-admin-form" className="admin-body">
       <div className="admin-descriptions">
         {ROWS_OBJECTS.map(mapDescriptionRows)}
       </div>

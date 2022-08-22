@@ -53,12 +53,10 @@ function Webstore() {
             setContentItems(localItems);
           } else {
             const tempItems = await getAllItems();
-            tempItems.forEach((item) => {
-              delete item.cost;
-            })
             localStorage.setItem("items", JSON.stringify(tempItems));
             setContentItems(tempItems);
           }
+          
         }
       } catch (error) { throw error }
     };

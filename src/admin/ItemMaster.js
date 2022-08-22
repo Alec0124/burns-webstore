@@ -2,18 +2,28 @@ import search from '../images/search.png'
 import { useState } from 'react';
 import Loading from './Loading'
 import { useEffect } from 'react';
-import { getAllItems, getAllCategories, createItem, updateItem, removeItem, getCategoriesOfItem } from '../api/index.js';
+import { getAllItems, getAllCategories, createItem, updateItem, removeItem, getCategoriesOfItem, saveItemImage } from '../api/index.js';
 import ListExchange from './ListExchange';
 import ListView from './ListView';
 
+
 function ItemMaster({ user, setSelectedCat, verifyToken }) {
+
+  //some rules for the images?
+  //thumbnail should be 200 X 150
+  //small should be 300 x 300
+  //large should be 500 x 500
+
 
   //component states
 
+  // list of image names for each item
+  // need images database (name only) and itemImages db
   const [allItems, setAllItems] = useState(null);
   const [searchDropdownItems, setSearchDropdownItems] = useState(null);
   const [mode, setMode] = useState('view');
   const [itemNumber, setItemNumber] = useState('');
+  const [selectedItemNumber, setSelectedItemNumber] = useState("");
   const [itemId, setItemId] = useState(null);
   const [isDropdownHover, setIsDropdownHover] = useState(false);
   const [itemSearchDisplay, setItemSearchDisplay] = useState("none");
@@ -29,7 +39,20 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
   const [categoryList, setCategoryList] = useState([]);
   const [categories, setCategories] = useState([]);
   const [categoriesDisplay, setCategoriesDisplay] = useState("none");
-  const [deleteDisplay, setDeleteDisplay] = useState("none")
+  const [imagesDisplay, setImagesDisplay] = useState("none");
+  const [deleteDisplay, setDeleteDisplay] = useState("none");
+  const [thumbnailImage, setThumbnailImage] = useState();
+  const [thumbnailInputValue, setThumbnailInputValue] = useState("");
+  const [thumbnailImageFile, setThumbnailImageFile] = useState();
+  const [thumbnailImageWrapper, setThumbnailImageWrapper] = useState((<img className="item-master-image" src={thumbnailImage} alt="item" />));
+  const [smallImage, setSmallImage] = useState();
+  const [smallInputValue, setSmallInputValue] = useState("");
+  const [smallImageFile, setSmallImageFile] = useState();
+  const [smallImageWrapper, setSmallImageWrapper] = useState((<img className="item-master-image" src={smallImage} alt="item" />));
+  const [largeImage, setLargeImage] = useState();
+  const [LargeInputValue, setLargeInputValue] = useState("");
+  const [largeImageFile, setLargeImageFile] = useState();
+  const [largeImageWrapper, setLargeImageWrapper] = useState((<img className="item-master-image" src={largeImage} alt="item" />));
 
   //wrapper set state functions
 
@@ -148,28 +171,15 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
     //return to view item
     setModeView();
   };
-  const proccessViewItem = async (itemNumber) => {
-    try {
-      const targetItem = allItems.find(item => item.itemNumber === itemNumber);
-      if (typeof (targetItem) === "object") {
-        const categoriesResp = await getCategoriesOfItem(targetItem.id);
-        console.log('categoriesResp: ', categoriesResp)
-        if (!!categoriesResp) {
-          const resultCategories = categoriesResp.map((categoryItem) => {
-            return categoryList.find(category => category.id === categoryItem.categoryId)
-          });
-          console.log('resultCategories:', resultCategories)
-          setCategories(resultCategories);
-        }
-        setItemNumber(itemNumber);
-        setName(targetItem.name);
-        setDescription(targetItem.description);
-        setCost(targetItem.cost);
-        setPrice(targetItem.price);
-      };
-    } catch (error) {
-      throw error;
-    }
+  const onClickSaveImages = () => {
+    //
+    saveItemImage({
+      token: user.token,
+      thumbnailImage: thumbnailImageFile,
+      smallImage: smallImageFile,
+      largeImage: largeImageFile,
+      itemNumber: selectedItemNumber
+    });
   };
   const onClickView = async () => {
     try {
@@ -180,18 +190,24 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
   };
   const onClickItemNumberDropdown = (e) => {
     proccessViewItem(e.target.textContent);
-    
+
     setSearchDropdownItems(null);
   };
   const onClickSearchItem = async () => {
     setItemSearchDisplay("block");
   };
   const onClickCategories = (e) => {
-    console.log('clicked')
-    if(mode !== "view") {
-    setCategoriesDisplay("flex");
+    if (mode !== "view" && selectedItemNumber !== "") {
+      setCategoriesDisplay("flex");
     } else {
       setCategoriesDisplay("block");
+    }
+  };
+  const onClickImages = (e) => {
+    if (mode !== "view") {
+      setImagesDisplay("flex");
+    } else {
+      setImagesDisplay("block");
     }
   };
   const onClickEditCancel = () => {
@@ -228,9 +244,61 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
   };
   const onClickCancelDelete = () => {
     setDeleteDisplay("none");
-  }
+  };
+  const onClickCancelImages = () => {
+    setImagesDisplay("none");
+  };
 
   //onChange functions
+
+  const onChangeThumbnailImageFileWrapper = async (e) => {
+    await onChangeThumbnailImageFile(e);
+  }
+
+  const onChangeThumbnailImageFile = async (e) => {
+    if (e.target.files[0].size > 256000) {
+      console.error("file is too large; max: 256kb");
+      setThumbnailInputValue("");
+      setThumbnailImage("");
+    } else {
+      setThumbnailImageFile(e.target.files[0]);
+      const newImage = URL.createObjectURL(e.target.files[0]);
+      // console.log("changing thumbnailImage: ",newImage)
+      setThumbnailImage(newImage);
+      setThumbnailInputValue(e.target.value);
+    }
+  };
+  const onChangeSmallImageFileWrapper = async (e) => {
+    await onChangeSmallImageFile(e);
+  }
+  const onChangeSmallImageFile = async (e) => {
+    if (e.target.files[0].size > 256000) {
+      console.error("file is too large; max: 256kb");
+      setSmallInputValue("");
+      setSmallImage("");
+    } else {
+      setSmallInputValue(e.target.value);
+      setSmallImageFile(e.target.files[0]);
+      const newImage = URL.createObjectURL(e.target.files[0]);
+      // console.log("changing smallImage: ",newImage)
+      setSmallImage(newImage);
+    }
+  };
+  const onChangeLargeImageFileWrapper = async (e) => {
+    await onChangeLargeImageFile(e);
+  }
+  const onChangeLargeImageFile = async (e) => {
+    if (e.target.files[0].size > 256000) {
+      console.error("file is too large; max: 256kb");
+      setLargeInputValue("");
+      setLargeImage("");
+    } else {
+      setLargeImageFile(e.target.files[0]);
+      const newImage = URL.createObjectURL(e.target.files[0]);
+      // console.log("changing smallImage: ",newImage)
+      setLargeImage(newImage);
+    }
+  };
 
   const itemNumberOnChange = (e) => {
     setItemNumber(e.target.value.trim().toUpperCase());
@@ -296,7 +364,39 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
   // end of onChange functions
 
   // helper functions
-
+  const proccessViewItem = async (itemNumber) => {
+    try {
+      const targetItem = allItems.find(item => item.itemNumber === itemNumber);
+      if (typeof (targetItem) === "object") {
+        const categoriesResp = await getCategoriesOfItem(targetItem.id);
+        console.log('categoriesResp: ', categoriesResp)
+        if (!!categoriesResp) {
+          const resultCategories = categoriesResp.map((categoryItem) => {
+            return categoryList.find(category => category.id === categoryItem.categoryId)
+          });
+          console.log('resultCategories:', resultCategories)
+          setCategories(resultCategories);
+        }
+        setItemNumber(itemNumber);
+        setSelectedItemNumber(itemNumber);
+        setName(targetItem.name);
+        setDescription(targetItem.description);
+        setCost(targetItem.cost);
+        setPrice(targetItem.price);
+        if (!!targetItem.images.thumbnail) {
+          setThumbnailImage(require(`../images/items/${targetItem.images.thumbnail.name}`));
+        }
+        if (!!targetItem.images.small) {
+          setSmallImage(require(`../images/items/${targetItem.images.small.name}`));
+        }
+        if (!!targetItem.images.large) {
+          setLargeImage(require(`../images/items/${targetItem.images.large.name}`));
+        }
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
   const displayLoading = (isLoading) => {
     if (isLoading) {
       return (
@@ -407,6 +507,20 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
         </div>
         <div className="row">
           <button onClick={onClickCategories}>View Categories</button>
+          {/* fix below */}
+          <button onClick={onClickImages}>View Images</button>
+          {/* <ListView
+            inputList={[
+              {
+                name: "thumbnail",
+                thumbnail: thumbnailImageWrapper
+              }
+            ]}
+            columnKeys={['name', 'src']}
+            columnNames={['Name', 'Image']}
+            componentDisplay={imagesDisplay}
+            setComponentDisplay={setImagesDisplay}
+          /> */}
           <ListView
             inputList={categories}
             columnKeys={['name']}
@@ -557,6 +671,32 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
             componentDisplay={categoriesDisplay}
             setComponentDisplay={setCategoriesDisplay}
           />
+          <button onClick={onClickImages}>Modify Images</button>
+          {/* ***Images Window*** */}
+          <div className="item-master-images" style={{ display: imagesDisplay }} >
+            <div>
+              Thumbnail <br />
+              {thumbnailImageWrapper}
+              <br />
+              <input name="thumbnail" value={thumbnailInputValue} type="file" accept=".jpg, .jpeg, .png" onChange={onChangeThumbnailImageFileWrapper} />
+            </div>
+            <div>
+              Small <br />
+              {smallImageWrapper}
+              <br />
+              <input name="small" value={smallInputValue} type="file" accept=".jpg, .jpeg, .png" onChange={onChangeSmallImageFileWrapper} />
+            </div>
+            <div>
+              Large <br />
+              {largeImageWrapper}
+              <br />
+              <input name="large" value={LargeInputValue} type="file" accept=".jpg, .jpeg, .png" onChange={onChangeLargeImageFileWrapper} />
+            </div>
+            <div>
+              <button onClick={onClickCancelImages}>Cancel</button>
+              <button onClick={onClickSaveImages} >Save Changes</button>
+            </div>
+          </div>
         </div>
         <div className="row">
           <button disabled className="inactive">View</button>
@@ -601,9 +741,12 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
     }
 
     setSelectedCat("item-master");
+    setThumbnailImageWrapper(<img className="item-master-image" src={thumbnailImage} alt="item" />);
+    setSmallImageWrapper(<img className="item-master-image" src={smallImage} alt="item" />);
+    setLargeImageWrapper(<img className="item-master-image" src={largeImage} alt="item" />);
     //category of the Admin app that is.
 
-  }, []);
+  }, [thumbnailImage, largeImage, smallImage]);
 
 
   return (

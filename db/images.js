@@ -1,15 +1,19 @@
 const { client } = require("./client");
 const { testFirstRow, respError } = require("./api");
 
-const createImage = async ({ name, blob, url }) => {
-    if ( typeof(name) !== 'string' || typeof(blob) !== 'string' ||  typeof(url) !== 'string' ) {
+const createImage = async (name) => {
+    if ( typeof(name) !== 'string') {
         throw respError('missingParam', 'missing input values');
     }
     try {
+        const matchingImageQuery = await client.query('SELECT * FROM "images" WHERE name=$1;', [name])
+        if (matchingImageQuery.rows.length > 0) {
+            return matchingImageQuery.rows[0];
+        }
 
-        const { rows } = await client.query(`INSERT INTO "images"(name, blob, url)
-                VALUES ($1, $2, $3) 
-                RETURNING *;`, [name, blob, url]);
+        const { rows } = await client.query(`INSERT INTO "images"(name)
+                VALUES ($1) 
+                RETURNING *;`, [name]);
         testFirstRow(rows);
 
         return rows[0];

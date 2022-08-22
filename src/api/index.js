@@ -132,6 +132,7 @@ const getAllItems = async () => {
         const allItemsJson = await fetch(`${BASE_URL}/items`);
         const allItems = await allItemsJson.json();
         localStorage.setItem('allItems', JSON.stringify(allItems));
+        console.log("getAllItems result: ", allItems);
         return allItems;
     } catch (error) {
         throw error;
@@ -145,7 +146,7 @@ const getItemByItemNumber = async (itemNumber) => {
         const input = itemNumber.toUpperCase();
         const resultJson = await fetch(`${BASE_URL}/items/itemNumber/${input}`);
         const result = resultJson.json();
-        // console.log("getItemNumber result: ", result);
+        console.log("getItemNumber result: ", result);
         return result;
     }
     catch (error) {
@@ -336,6 +337,78 @@ const saveStoreLogoImage = async (token, file) => {
     catch (error) {
         console.error(error);
     }
+};
+const saveItemImage = async ({token, thumbnailImage, smallImage, largeImage, itemNumber}) => {
+    //probably need to submit as formData
+    try {
+        if(!thumbnailImage) {
+            throw new Error("no thumbnail file provided");
+        }
+        const formData = new FormData();
+        formData.append("thumbnail", thumbnailImage);
+        // formData.append("small", smallImage);
+        // formData.append("large", largeImage);
+        // console.log("running saveStoreLogo file: ", formData, "token: ", token);
+        const imageResp = await fetch(`${BASE_URL}/images/item/thumbnail/${itemNumber}`, {
+            method: "POST",
+            headers: {
+                "autorization": `Beaerer ${token}`
+            },
+            body: formData
+        });
+
+        console.log("imageResp", imageResp);
+    }
+    
+    catch (error) {
+        console.error(error);
+    }
+    try {
+        if(!smallImage) {
+            throw new Error("no small file provided");
+        }
+        const formData = new FormData();
+        formData.append("small", smallImage);
+        // formData.append("small", smallImage);
+        // formData.append("large", largeImage);
+        // console.log("running saveStoreLogo file: ", formData, "token: ", token);
+        const imageResp = await fetch(`${BASE_URL}/images/item/small/${itemNumber}`, {
+            method: "POST",
+            headers: {
+                "autorization": `Beaerer ${token}`
+            },
+            body: formData
+        });
+
+        console.log("imageResp", imageResp);
+    }
+    
+    catch (error) {
+        console.error(error);
+    }
+    try {
+        if(!largeImage) {
+            throw new Error("no large file provided");
+        }
+        const formData = new FormData();
+        formData.append("large", largeImage);
+        // formData.append("small", smallImage);
+        // formData.append("large", largeImage);
+        // console.log("running saveStoreLogo file: ", formData, "token: ", token);
+        const imageResp = await fetch(`${BASE_URL}/images/item/large/${itemNumber}`, {
+            method: "POST",
+            headers: {
+                "autorization": `Beaerer ${token}`
+            },
+            body: formData
+        });
+
+        console.log("imageResp", imageResp);
+    }
+    
+    catch (error) {
+        console.error(error);
+    }
 }
 
 
@@ -358,5 +431,6 @@ module.exports = {
     createOrder,
     getCategoriesOfItem,
     saveStoreLogoImage,
+    saveItemImage,
     BASE_URL
 };

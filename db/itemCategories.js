@@ -66,7 +66,7 @@ const getItemCategoriesByCategory = async (categoryId) => {
         console.log('entering getItemCategoriesByCategory')
         const { rows } = await client.query(`SELECT * FROM "itemCategories" 
         WHERE "categoryId"=($1)`, [categoryId]);
-        if(!rows) {
+        if(!rows || rows.length < 1) {
             return false
         };
 

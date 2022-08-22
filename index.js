@@ -9,23 +9,55 @@ const { createUser, loginUser, getAllUsers, client, getUserByUsername, updateUse
     getCategoryById, createItem, getAllItems, getItemById, updateItem,
     removeItem, getLineItemsByOrder, removeLineItem,
     createCategory, getAllCategories, removeCategory, updateCategory, getItemCategoriesByCategory,
-    removeItemCategory, createItemCategory, getItemByItemNumber, respError, getUserById } = require('./db');
+    removeItemCategory, createItemCategory, getItemByItemNumber, respError, getUserById, createImage,
+    createItemImage } = require('./db');
 
 // create the express server here
 
 const PORT = 5000;
 const express = require('express');
 const multer = require('multer');
-const storage = multer.diskStorage({
+const path = require("path");
+const storage_storeLogo = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'src/images/')
+        cb(null, 'src/images/')
     },
     filename: function (req, file, cb) {
-    //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, file.fieldname + ".png" )
+        //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + path.parse(file.originalname).ext)
     }
-  })
-const upload = multer({ storage: storage });
+})
+const upload_storeLogo = multer({ storage: storage_storeLogo });
+const storage_itemThumbnail = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'src/images/items/')
+    },
+    filename: function (req, file, cb) {
+        //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, req.params.itemNumber + "_thumbnail" + path.parse(file.originalname).ext)
+    }
+})
+const upload_itemThumbnail = multer({ storage: storage_itemThumbnail });
+const storage_itemSmall = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'src/images/items/')
+    },
+    filename: function (req, file, cb) {
+        //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, req.params.itemNumber + "_small" + path.parse(file.originalname).ext)
+    }
+})
+const upload_itemSmall = multer({ storage: storage_itemSmall });
+const storage_itemLarge = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'src/images/items/')
+    },
+    filename: function (req, file, cb) {
+        //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, req.params.itemNumber + "_large" + path.parse(file.originalname).ext)
+    }
+})
+const upload_itemLarge = multer({ storage: storage_itemLarge });
 const server = express();
 const cors = require('cors');
 const morgan = require('morgan');
@@ -1056,26 +1088,136 @@ itemCategoriesRouter.delete('/:itemCategoryId', verifyToken, async (req, res, ne
 });
 
 // *** IMAGES ***
-imagesRouter.post('/storeLogo', upload.single("storeLogo"), async (req, res, next) => {
-    console.log("LUCIE")
+// const storeLogoSetup = (req, res, next) => {
+//     storage = multer.diskStorage({
+//         destination: function (req, file, cb) {
+//             cb(null, 'src/images/')
+//         },
+//         filename: function (req, file, cb) {
+//             //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//             cb(null, file.fieldname + ".png")
+//         }
+//     });
+//     upload = multer({ storage: storage });
+//     next();
+// }
+imagesRouter.post('/storeLogo', upload_storeLogo.single("storeLogo"), async (req, res, next) => {
     try {
-        console.log('posting to storeLogo')
+        // console.log('posting to storeLogo')
         const file = req.file;
 
-        console.log("req.body: ", file);
+        console.log("posted file: ", file);
 
         // fs.writeFile("./src/images/storeLogo.png", file.buffer, (err) => {
         //     console.error(err);
         // });
 
-        
-        res.send({body:file});
+
+        res.send({ body: file });
     } catch (err) {
         console.error(err);
         next();
     }
 
 });
+
+// const itemImageSetup = (req, res, next) => {
+//     try {
+//         const { itemNumber } = req.params;
+//         console.log(`posting to item/${itemNumber}`);
+//         console.log("req.file: ", req.file);
+
+//         // console.log('req: ', req);
+//         storage = multer.diskStorage({
+//             destination: function (req, file, cb) {
+//                 cb(null, 'src/images/items/')
+//             },
+//             filename: function (req, file, cb) {
+//                 //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//                 cb(null, itemNumber + "_thumbnail" + path.parse(file.originalname).ext);
+//             }
+//         });
+//         upload = multer({ storage: storage });
+//         console.log("storage: ", storage)
+//         next();
+//     } catch (err) {
+//         console.error(err);
+//         next();
+//     }
+
+// };
+imagesRouter.post('/item/thumbnail/:itemNumber', upload_itemThumbnail.single("thumbnail"), async (req, res, next) => {
+    console.log("req.file.filename: ", req.file.filename);
+    const itemNumber = req.params.itemNumber;
+    const fileName = req.file.filename;
+    const { rows } = await client.query('SELECT * FROM "itemImages" WHERE "itemNumber"=$1 AND type=$2;',
+        [itemNumber, "thumbnail"]);
+        console.log("pass first client.query")
+    if (rows.length > 0) {
+        //update image filename if different
+        //only ext should possibly be different
+        console.log(rows);
+    } else {
+        //create image filename.
+        const newImage = await createImage(fileName);
+        const itemImage = await createItemImage({
+            itemNumber: itemNumber,
+            imageId: newImage.id,
+            type: "thumbnail"
+        });
+        console.log('created image: ', newImage, "and itemImage: ", itemImage);
+    }
+
+
+    next();
+});
+imagesRouter.post('/item/small/:itemNumber', upload_itemSmall.single("small"), async (req, res, next) => {
+    console.log("req.file.filename: ", req.file.filename);
+    const itemNumber = req.params.itemNumber;
+    const fileName = req.file.filename;
+    const { rows } = await client.query('SELECT * FROM "itemImages" WHERE "itemNumber"=$1 AND "type"=$2;',
+        [itemNumber, "small"]);
+    if (rows.length > 0) {
+        //update image filename
+        console.log(rows);
+    } else {
+        //create image filename.
+        const newImage = await createImage(fileName);
+        const itemImage = await createItemImage({
+            itemNumber: itemNumber,
+            imageId: newImage.id,
+            type: "small"
+        });
+        console.log('created image: ', newImage, "and itemImage: ", itemImage);
+    }
+
+
+    next();
+});
+imagesRouter.post('/item/large/:itemNumber', upload_itemLarge.single("large"), async (req, res, next) => {
+    console.log("req.file.filename: ", req.file.filename);
+    const itemNumber = req.params.itemNumber;
+    const fileName = req.file.filename;
+    const { rows } = await client.query('SELECT * FROM "itemImages" WHERE "itemNumber"=$1 AND "type"=$2;',
+        [itemNumber, "large"]);
+    if (rows.length > 0) {
+        //update image filename
+        console.log(rows);
+    } else {
+        //create image filename.
+        const newImage = await createImage(fileName);
+        const itemImage = await createItemImage({
+            itemNumber: itemNumber,
+            imageId: newImage.id,
+            type: "large"
+        });
+        console.log('created image: ', newImage, "and itemImage: ", itemImage);
+    }
+
+
+    next();
+});
+//come back to this after setting up front end to upload 3 image files. _thumbnail, _reg, _large
 
 
 apiRouter.use((error, req, res, next) => {
