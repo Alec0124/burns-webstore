@@ -1154,18 +1154,20 @@ imagesRouter.post('/item/thumbnail/:itemNumber', upload_itemThumbnail.single("th
         [itemNumber, "thumbnail"]);
         console.log("pass first client.query")
     if (rows.length > 0) {
-        //update image filename if different
-        //only ext should possibly be different
-        console.log(rows);
+        const imageQuery = await client.query('SELECT * FROM images WHERE id=$1', [rows[0].imageId]);
+        const imageName = imageQuery.rows[0].name;
+        if(imageName !== fileName) {   
+            //rows[0].imageId is the id of the previous image
+            client.query('UPDATE images SET name=$1 WHERE id=$2', [fileName, rows[0].imageId]);
+            //We need to also delete the original image file that we are replacing
+        }
     } else {
-        //create image filename.
         const newImage = await createImage(fileName);
         const itemImage = await createItemImage({
             itemNumber: itemNumber,
             imageId: newImage.id,
             type: "thumbnail"
         });
-        console.log('created image: ', newImage, "and itemImage: ", itemImage);
     }
 
 
@@ -1177,10 +1179,15 @@ imagesRouter.post('/item/small/:itemNumber', upload_itemSmall.single("small"), a
     const fileName = req.file.filename;
     const { rows } = await client.query('SELECT * FROM "itemImages" WHERE "itemNumber"=$1 AND "type"=$2;',
         [itemNumber, "small"]);
-    if (rows.length > 0) {
-        //update image filename
-        console.log(rows);
-    } else {
+        if (rows.length > 0) {
+            const imageQuery = await client.query('SELECT * FROM images WHERE id=$1', [rows[0].imageId]);
+            const imageName = imageQuery.rows[0].name;
+            if(imageName !== fileName) {   
+                //rows[0].imageId is the id of the previous image
+                client.query('UPDATE images SET name=$1 WHERE id=$2', [fileName, rows[0].imageId]);
+                //We need to also delete the original image file that we are replacing
+            }
+        } else {
         //create image filename.
         const newImage = await createImage(fileName);
         const itemImage = await createItemImage({
@@ -1200,10 +1207,15 @@ imagesRouter.post('/item/large/:itemNumber', upload_itemLarge.single("large"), a
     const fileName = req.file.filename;
     const { rows } = await client.query('SELECT * FROM "itemImages" WHERE "itemNumber"=$1 AND "type"=$2;',
         [itemNumber, "large"]);
-    if (rows.length > 0) {
-        //update image filename
-        console.log(rows);
-    } else {
+        if (rows.length > 0) {
+            const imageQuery = await client.query('SELECT * FROM images WHERE id=$1', [rows[0].imageId]);
+            const imageName = imageQuery.rows[0].name;
+            if(imageName !== fileName) {   
+                //rows[0].imageId is the id of the previous image
+                client.query('UPDATE images SET name=$1 WHERE id=$2', [fileName, rows[0].imageId]);
+                //We need to also delete the original image file that we are replacing
+            }
+        } else {
         //create image filename.
         const newImage = await createImage(fileName);
         const itemImage = await createItemImage({
