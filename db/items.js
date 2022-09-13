@@ -4,13 +4,13 @@ const { testFirstRow, getNestedTable, getQueryValuesString, deleteReferencedTabl
 const { getItemCategoriesByItem, updateCategoryItems, getItemCategoriesByCategory } = require("./itemCategories");
 
 //creates new item row in DB
-const createItem = async ({ itemNumber, description, name, cost, price, onHand, status, type, webstoreStatus }) => {
+const createItem = async ({ itemNumber, description, name, cost, price, onHand, status, type, webstoreStatus, taxable, featured }) => {
 
     try {
-        const { rows } = await client.query(`INSERT INTO items("itemNumber", "description", name, cost, price, "onHand", status, type, "webstoreStatus")
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        const { rows } = await client.query(`INSERT INTO items("itemNumber", "description", name, cost, price, "onHand", status, type, "webstoreStatus", taxable, featured)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 ON CONFLICT ("itemNumber") DO NOTHING 
-                RETURNING *;`, [itemNumber.toUpperCase(), description, name, cost, price, onHand, status, type, webstoreStatus]);
+                RETURNING *;`, [itemNumber.toUpperCase(), description, name, cost, price, onHand, status, type, webstoreStatus, taxable, featured]);
         testFirstRow(rows);
         return rows[0];
     }
@@ -171,7 +171,7 @@ const getAllItems = async () => {
     }
 };
 //updates an item row by id
-const updateItem = async ({ id, name, description, cost, price, status, webstoreStatus, taxable, type, categories }) => {
+const updateItem = async ({ id, name, description, cost, price, status, webstoreStatus, taxable, type, categories, featured }) => {
     console.log('running updateItem()');
     try {
 
@@ -215,6 +215,11 @@ const updateItem = async ({ id, name, description, cost, price, status, webstore
                 name: "type",
                 type: "string",
                 value: type
+            },
+            {
+                name: "featured",
+                type: "boolean",
+                value: featured
             }
         ], id);
         const { rows } = await client.query(`UPDATE items ${queryValuesString}`, valuesArray);

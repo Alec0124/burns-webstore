@@ -28,6 +28,16 @@ const storage_storeLogo = multer.diskStorage({
     }
 })
 const upload_storeLogo = multer({ storage: storage_storeLogo });
+const storage_homeBanner = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'src/images/')
+    },
+    filename: function (req, file, cb) {
+        //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + path.parse(file.originalname).ext)
+    }
+})
+const upload_homeBanner = multer({ storage: storage_homeBanner });
 const storage_itemThumbnail = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'src/images/items/')
@@ -62,7 +72,7 @@ const server = express();
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const fs = require("fs");
+// const fs = require("fs");
 
 // const { rebuildDB } = require('./db/seedData');
 
@@ -177,6 +187,23 @@ const verifyTokenReturn = async (req, res, next) => {
     }
 };
 
+const setUpdateTimestamp = async (req, res, next) => {
+    //udating timeStamp
+    try {
+        console.log("attempting to update setUpdate TimeStamp")
+        const preTime = new Date();
+        const time = await preTime.stringify();
+        const resp = await client.query(`UPDATE "lastUpdate" SET "timeStamp"=$1
+            WHERE id=1;` , [time]); 
+        console.log(resp.rows[0]);
+        next();
+    }
+    catch (error) {
+        console.error(error);
+        next();
+    }
+}
+
 
 // *** templates ***
 
@@ -185,7 +212,7 @@ const verifyTokenReturn = async (req, res, next) => {
 //     if ( !req.user.admin) {
 //         throw {
 //             name: 'error_requireAdmin', 
-//             error: 'must use token of admin user', 
+//             error: "\s{0}.+, 
 //             message: 'must use token of admin user'
 //         };
 //     };
@@ -217,6 +244,20 @@ apiRouter.get('/health', (req, res, next) => {
 });
 apiRouter.get('/verify', verifyTokenReturn);
 
+apiRouter.get(`/updates`, async (req, res, next) => {
+    try {
+        const lastUpdateRows = await client.query(`SELECT * FROM "lastUpdate";`);
+        const lastUpdate = lastUpdateRows.rows[0];
+        const lastUpdatePackage = await lastUpdate.strigify();
+        res.send(lastUpdatePackage);
+        next();
+
+    }
+    catch (error) {
+        console.error(error);
+        next();
+    }
+});
 
 // ***users***
 // POST /users/register
@@ -316,7 +357,7 @@ usersRouter.get('/:username', async (req, res, next) => {
 // PATCH /api/users/:userId
 //updated user row **admin** or **owner**
 // NOT TESTED
-usersRouter.patch('/:userId', verifyToken, async (req, res, next) => {
+usersRouter.patch('/:userId', verifyToken, setUpdateTimestamp, async (req, res, next) => {
     try {
         if (!req.user) {
             throw new Error('must provide a BEARER token');
@@ -621,7 +662,7 @@ itemsRouter.get('/itemNumber/:itemNumber', verifyToken, async (req, res, next) =
 // PATCH api/items/:itemId (**admin**)
 //updates an item in the DB
 
-itemsRouter.patch('/:itemId', verifyToken, async (req, res, next) => {
+itemsRouter.patch('/:itemId', setUpdateTimestamp, verifyToken, async (req, res, next) => {
     console.log('preparing to run updateItem')
     try {
 
@@ -649,7 +690,7 @@ itemsRouter.patch('/:itemId', verifyToken, async (req, res, next) => {
 //DELETE api/items/:itemId (**admin**)
 //deletes item from DB and all associated line items
 
-itemsRouter.delete('/:itemId', verifyToken, async (req, res, next) => {
+itemsRouter.delete('/:itemId', verifyToken, setUpdateTimestamp, async (req, res, next) => {
 
     try {
         // if (!req.user.admin) {
@@ -808,7 +849,7 @@ lineItemsRouter.delete('/:lineItemId', verifyToken, async (req, res, next) => {
 //POST api/categories (**admin**)
 //creates a new category for the categories DB; requires a token from an admin user
 
-categoriesRouter.post('', verifyToken, async (req, res, next) => {
+categoriesRouter.post('', verifyToken, setUpdateTimestamp, async (req, res, next) => {
 
     // if (!req.user.admin) {
     //     throw {
@@ -881,7 +922,7 @@ categoriesRouter.get('', async (req, res, next) => {
 // PATCH api/categories/:categoryId (**admin**)
 //updates a category in the DB
 
-categoriesRouter.patch('/:categoryId', verifyToken, async (req, res, next) => {
+categoriesRouter.patch('/:categoryId', verifyToken, setUpdateTimestamp, async (req, res, next) => {
 
     // if (!req.user.admin) {
     //     throw {
@@ -912,7 +953,7 @@ categoriesRouter.patch('/:categoryId', verifyToken, async (req, res, next) => {
 //DELETE api/categories/:categoryId (**admin**)
 //deletes category from DB and all associated itemCategories
 
-categoriesRouter.delete('/:categoryId', verifyToken, async (req, res, next) => {
+categoriesRouter.delete('/:categoryId', verifyToken, setUpdateTimestamp, async (req, res, next) => {
 
     console.log('delete cat id running');
 
@@ -957,7 +998,7 @@ categoriesRouter.delete('/:categoryId', verifyToken, async (req, res, next) => {
 //POST api/itemCategories (**admin**)
 //creates a new category for the categories DB; requires a token from an admin user
 
-itemCategoriesRouter.post('', verifyToken, async (req, res, next) => {
+itemCategoriesRouter.post('', verifyToken, setUpdateTimestamp, async (req, res, next) => {
 
     if (!req.user.admin) {
         throw {
@@ -1060,7 +1101,7 @@ itemCategoriesRouter.get('/:categoryId', async (req, res, next) => {
 //DELETE api/itemCategories/:itemCategoryId (**admin**)
 //deletes itemCategory from DB
 
-itemCategoriesRouter.delete('/:itemCategoryId', verifyToken, async (req, res, next) => {
+itemCategoriesRouter.delete('/:itemCategoryId', verifyToken, setUpdateTimestamp, async (req, res, next) => {
 
     if (!req.user.admin) {
         throw {
@@ -1101,7 +1142,26 @@ itemCategoriesRouter.delete('/:itemCategoryId', verifyToken, async (req, res, ne
 //     upload = multer({ storage: storage });
 //     next();
 // }
-imagesRouter.post('/storeLogo', upload_storeLogo.single("storeLogo"), async (req, res, next) => {
+imagesRouter.post('/storeLogo', upload_storeLogo.single("storeLogo"), setUpdateTimestamp, async (req, res, next) => {
+    try {
+        // console.log('posting to storeLogo')
+        const file = req.file;
+
+        console.log("posted file: ", file);
+
+        // fs.writeFile("./src/images/storeLogo.png", file.buffer, (err) => {
+        //     console.error(err);
+        // });
+
+
+        res.send({ body: file });
+    } catch (err) {
+        console.error(err);
+        next();
+    }
+
+});
+imagesRouter.post('/homeBanner', upload_homeBanner.single("homeBanner"), setUpdateTimestamp, async (req, res, next) => {
     try {
         // console.log('posting to storeLogo')
         const file = req.file;
@@ -1146,17 +1206,17 @@ imagesRouter.post('/storeLogo', upload_storeLogo.single("storeLogo"), async (req
 //     }
 
 // };
-imagesRouter.post('/item/thumbnail/:itemNumber', upload_itemThumbnail.single("thumbnail"), async (req, res, next) => {
+imagesRouter.post('/item/thumbnail/:itemNumber', setUpdateTimestamp, upload_itemThumbnail.single("thumbnail"), async (req, res, next) => {
     console.log("req.file.filename: ", req.file.filename);
     const itemNumber = req.params.itemNumber;
     const fileName = req.file.filename;
     const { rows } = await client.query('SELECT * FROM "itemImages" WHERE "itemNumber"=$1 AND type=$2;',
         [itemNumber, "thumbnail"]);
-        console.log("pass first client.query")
+    console.log("pass first client.query")
     if (rows.length > 0) {
         const imageQuery = await client.query('SELECT * FROM images WHERE id=$1', [rows[0].imageId]);
         const imageName = imageQuery.rows[0].name;
-        if(imageName !== fileName) {   
+        if (imageName !== fileName) {
             //rows[0].imageId is the id of the previous image
             client.query('UPDATE images SET name=$1 WHERE id=$2', [fileName, rows[0].imageId]);
             //We need to also delete the original image file that we are replacing
@@ -1173,21 +1233,21 @@ imagesRouter.post('/item/thumbnail/:itemNumber', upload_itemThumbnail.single("th
 
     next();
 });
-imagesRouter.post('/item/small/:itemNumber', upload_itemSmall.single("small"), async (req, res, next) => {
+imagesRouter.post('/item/small/:itemNumber', setUpdateTimestamp, upload_itemSmall.single("small"), async (req, res, next) => {
     console.log("req.file.filename: ", req.file.filename);
     const itemNumber = req.params.itemNumber;
     const fileName = req.file.filename;
     const { rows } = await client.query('SELECT * FROM "itemImages" WHERE "itemNumber"=$1 AND "type"=$2;',
         [itemNumber, "small"]);
-        if (rows.length > 0) {
-            const imageQuery = await client.query('SELECT * FROM images WHERE id=$1', [rows[0].imageId]);
-            const imageName = imageQuery.rows[0].name;
-            if(imageName !== fileName) {   
-                //rows[0].imageId is the id of the previous image
-                client.query('UPDATE images SET name=$1 WHERE id=$2', [fileName, rows[0].imageId]);
-                //We need to also delete the original image file that we are replacing
-            }
-        } else {
+    if (rows.length > 0) {
+        const imageQuery = await client.query('SELECT * FROM images WHERE id=$1', [rows[0].imageId]);
+        const imageName = imageQuery.rows[0].name;
+        if (imageName !== fileName) {
+            //rows[0].imageId is the id of the previous image
+            client.query('UPDATE images SET name=$1 WHERE id=$2', [fileName, rows[0].imageId]);
+            //We need to also delete the original image file that we are replacing
+        }
+    } else {
         //create image filename.
         const newImage = await createImage(fileName);
         const itemImage = await createItemImage({
@@ -1201,21 +1261,21 @@ imagesRouter.post('/item/small/:itemNumber', upload_itemSmall.single("small"), a
 
     next();
 });
-imagesRouter.post('/item/large/:itemNumber', upload_itemLarge.single("large"), async (req, res, next) => {
+imagesRouter.post('/item/large/:itemNumber', setUpdateTimestamp, upload_itemLarge.single("large"), async (req, res, next) => {
     console.log("req.file.filename: ", req.file.filename);
     const itemNumber = req.params.itemNumber;
     const fileName = req.file.filename;
     const { rows } = await client.query('SELECT * FROM "itemImages" WHERE "itemNumber"=$1 AND "type"=$2;',
         [itemNumber, "large"]);
-        if (rows.length > 0) {
-            const imageQuery = await client.query('SELECT * FROM images WHERE id=$1', [rows[0].imageId]);
-            const imageName = imageQuery.rows[0].name;
-            if(imageName !== fileName) {   
-                //rows[0].imageId is the id of the previous image
-                client.query('UPDATE images SET name=$1 WHERE id=$2', [fileName, rows[0].imageId]);
-                //We need to also delete the original image file that we are replacing
-            }
-        } else {
+    if (rows.length > 0) {
+        const imageQuery = await client.query('SELECT * FROM images WHERE id=$1', [rows[0].imageId]);
+        const imageName = imageQuery.rows[0].name;
+        if (imageName !== fileName) {
+            //rows[0].imageId is the id of the previous image
+            client.query('UPDATE images SET name=$1 WHERE id=$2', [fileName, rows[0].imageId]);
+            //We need to also delete the original image file that we are replacing
+        }
+    } else {
         //create image filename.
         const newImage = await createImage(fileName);
         const itemImage = await createItemImage({

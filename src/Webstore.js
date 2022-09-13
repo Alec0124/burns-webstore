@@ -11,17 +11,20 @@ import Logout from "./Logout.js";
 import StoreFooter from "./StoreFooter.js";
 import StoreHeader from "./StoreHeader.js";
 import { useState, useEffect } from "react";
-import { BASE_URL, getAllCategories, getAllItems } from "./api/index.js";
+import { BASE_URL, getAllCategories, getAllItems, checkForUpdates } from "./api/index.js";
 import { Route, Routes } from "react-router-dom";
 
+//notes
+//thumbnail size 200x200
+//small size 730 x 400
+//large size 1280 x 900
+
 //toDoList
-//Touch up Login component, useful error messaging
-//create register page and functionality
-//Successful Chekout should create a new order for that user
-//Need to create OrderHistory Component
-//Need Search Bar Functionality for Webstore
-//Have a place in admin to upload store logo, make funcitonal
-//modify database to accept images for items. They should have a thumbnail, small, reg.
+//Touch up Page (4) sep 15-16
+//Successful Chekout should create a new order for that user (2) sep 14
+//Need to create OrderHistory Component (3) sep 14
+//Need Search Bar Functionality for Webstore (1) sep 13
+
 
 //will need to review the admin security
 
@@ -47,16 +50,30 @@ function Webstore() {
         if (contentItems.length < 1) {
           const itemsResp = localStorage.getItem('items');
           if (!!itemsResp) {
-            const localItems = await JSON.parse(itemsResp);
+            //ther is localStorage Items
+            //check if database has updated recently
+            const localStorageTimeResp = localStorage.getItem("localStorageTime")
+            const localStorageTime = JSON.parse(localStorageTimeResp);
+            const isUpdateNeeded = await checkForUpdates(localStorageTime);
+            if (!!isUpdateNeeded) {
+              const tempItems = await getAllItems();
+              localStorage.setItem("items", JSON.stringify(tempItems));
+              setContentItems(tempItems);
+              localStorage.setItem("localStorageTime", JSON.stringify(new Date()));
+            } else {
 
-
-            setContentItems(localItems);
+              const localItems = await JSON.parse(itemsResp);
+              setContentItems(localItems);
+            }
           } else {
+            //getAllItems
             const tempItems = await getAllItems();
             localStorage.setItem("items", JSON.stringify(tempItems));
             setContentItems(tempItems);
+            //set localStorageTime
+            localStorage.setItem("localStorageTime", JSON.stringify(new Date()));
           }
-          
+
         }
       } catch (error) { throw error }
     };
@@ -129,8 +146,8 @@ function Webstore() {
       <StoreHeader cart={cart} user={user} setUser={setUser} />
       <NavMenu setSelectedCategory={setSelectedCategory} selectedCategory={selectedCategory} categoryList={categoryList} />
       <Routes>
-      <Route path="/logout" element={<Logout setUser={setUser} />} />
-        <Route path="/register" element={<Register user={user} setUser={setUser}/>} />
+        <Route path="/logout" element={<Logout setUser={setUser} />} />
+        <Route path="/register" element={<Register user={user} setUser={setUser} />} />
         <Route path="/login" element={<Login displayLogin="block" user={user} setUser={setUser} />} />
         <Route path="/home" element={<Home contentItems={contentItems} />} />
         <Route path="/cart" element={<Cart setUser={setUser} user={user} cart={cart} setCart={setCart} />} />

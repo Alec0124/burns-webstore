@@ -10,6 +10,20 @@ const respError = async (name, message) => {
     });
 };
 
+const checkForUpdates = async (localStorageTime) => {
+    const resp = await fetch(`${BASE_URL}/updates`);
+    const lastUpdateTime = resp.json();
+    if( localStorageTime < lastUpdateTime) {
+        localStorage.clear();
+        return true
+        //need to refresh React??
+    } else {
+        return false
+        //most of the time will end up here
+    }
+};
+
+
 // ***USERS***
 //Register a user
 async function fetchRegister({ username, password, address1Billing,
@@ -295,21 +309,6 @@ const createOrder = async (token, orderDetails, lineItems) => {
 };
 
 /// images
-function readStream(stream, encoding = "utf8") {
-    if (!stream.readable) {
-        console.error('not a readable stream')
-    } else {
-        stream.setEncoding(encoding);
-
-        return new Promise((resolve, reject) => {
-            let data = "";
-
-            stream.on("data", chunk => data += chunk);
-            stream.on("end", () => resolve(data));
-            stream.on("error", error => reject(error));
-        });
-    }
-}
 
 
 const saveStoreLogoImage = async (token, file) => {
@@ -319,6 +318,32 @@ const saveStoreLogoImage = async (token, file) => {
         formData.append("storeLogo", file);
         console.log("running saveStoreLogo file: ", formData, "token: ", token);
         const imageResp = await fetch(`${BASE_URL}/images/storeLogo`, {
+            method: "POST",
+            headers: {
+                "autorization": `Beaerer ${token}`
+            },
+            body: formData
+        });
+
+
+        // imageResp.formData().then(data=>{
+        //     console.log("data: ", data)
+        // }).catch(err=>{console.error(err)})
+        // const data = await readStream(imageResp.body);
+        console.log("imageResp", imageResp);
+        // imageResp.body.reader(data=>{console.log(data)})
+    }
+    catch (error) {
+        console.error(error);
+    }
+};
+const saveHomeBannerImage = async (token, file) => {
+    //probably need to submit as formData
+    try {
+        const formData = new FormData();
+        formData.append("homeBanner", file);
+        console.log("running saveHomeBanner file: ", formData, "token: ", token);
+        const imageResp = await fetch(`${BASE_URL}/images/homeBanner`, {
             method: "POST",
             headers: {
                 "autorization": `Beaerer ${token}`
@@ -431,6 +456,8 @@ module.exports = {
     createOrder,
     getCategoriesOfItem,
     saveStoreLogoImage,
+    saveHomeBannerImage,
     saveItemImage,
+    checkForUpdates,
     BASE_URL
 };

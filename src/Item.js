@@ -15,7 +15,13 @@ const Item = ({ cart, setCart, contentItems }) => {
     const onChangeQuantity =  (e) => {
         setQuantity(parseInt(e.target.value));
     }
-
+    const returnImageSrc = (item) => {
+        if(!!item.images && !!item.images.small) {
+            return require(`./images/items/${item.images.small.name}`) 
+        } else {
+            return ""
+        }
+    }
     const onClickAddToCart = (e) => {
 
         if (cart.length < 1) {
@@ -53,13 +59,13 @@ const Item = ({ cart, setCart, contentItems }) => {
 
 
     if (!!activeItem) {
+        // console.log("active large image: ", activeItem.images.large.name)
         return (<div className="store-item">
             <h1>{activeItem.name}</h1>
-            <img alt="item" style={
+            <img alt="item" src={returnImageSrc(activeItem)} style={
                 {
-                    width: "700px",
-                    height: "400px",
-                    backgroundColor: "red"
+                    // width: "700px",
+                    height: "400px"
                 }
             } />
             <h3>${activeItem.price.toFixed(2)}</h3>

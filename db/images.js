@@ -99,6 +99,7 @@ const removeImage = async (id) => {
         throw error;
     }
 };
+
     
 
 module.exports = {

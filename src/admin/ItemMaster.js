@@ -32,6 +32,7 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
   const [cost, setCost] = useState(0);
   const [price, setPrice] = useState(0);
   const [taxable, setTaxable] = useState(false);
+  const [featured, setFeatured] = useState(false);
   const [status, setStatus] = useState("active");
   const [type, setType] = useState('stock');
   const [webstoreStatus, setWebstoreStatus] = useState("inactive");
@@ -352,6 +353,9 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
   const taxableOnChange = (e) => {
     setTaxable(e.target.value);
   };
+  const featuredOnChange = (e) => {
+    setTaxable(e.target.value);
+  };
   const statusOnChange = (e) => {
     setStatus(e.target.value);
   };
@@ -364,6 +368,13 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
   // end of onChange functions
 
   // helper functions
+  const booleanToYesNo = (boolean) => {
+    if(!!boolean) {
+      return (<span style={{color:"green"}}>Y</span>)
+    } else {
+      return (<span style={{color:"red"}}>N</span>)
+    }
+  }
   const proccessViewItem = async (itemNumber) => {
     try {
       const targetItem = allItems.find(item => item.itemNumber === itemNumber);
@@ -383,6 +394,8 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
         setDescription(targetItem.description);
         setCost(targetItem.cost);
         setPrice(targetItem.price);
+        setTaxable(targetItem.taxable);
+        setFeatured(targetItem.featured);
         if (!!targetItem.images.thumbnail) {
           setThumbnailImage(require(`../images/items/${targetItem.images.thumbnail.name}`));
         }
@@ -503,6 +516,10 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
           <span>Price:</span> {price}
         </div>
         <div className="row">
+          <span>Taxable:</span> {booleanToYesNo(taxable)}
+          <span>Featured:</span> {booleanToYesNo(featured)}
+        </div>
+        <div className="row">
           <span>Webstore Status: </span> {webstoreStatus}
         </div>
         <div className="row">
@@ -582,8 +599,10 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
           <input type="number" value={price} onChange={priceOnChange} />
         </div>
         <div className="row">
-          <span>Taxable?</span>
+          <span>Taxable:</span>
           <input type="checkbox" value={taxable} onChange={taxableOnChange} />
+          <span>Featured:</span>
+          <input type="checkbox" value={featured} onChange={featuredOnChange} />
         </div>
         <div className="row">
           <span>Webstore Status: </span>
@@ -645,6 +664,12 @@ function ItemMaster({ user, setSelectedCat, verifyToken }) {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+        </div>
+        <div className="row">
+          <span>Taxable:</span>
+          <input type="checkbox" value={taxable} onChange={taxableOnChange} />
+          <span>Featured:</span>
+          <input type="checkbox" value={featured} onChange={featuredOnChange} />
         </div>
         <div className="row">
           <span>Cost:</span>
