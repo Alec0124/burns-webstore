@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Login from "./Login";
+import StoreSearchBar from "./StoreSearchBar";
 
 const storeLogo = require("./images/storeLogo.png");
 
-const StoreHeader = ({ cart, user, setUser }) => {
+const StoreHeader = ({ cart, user, setUser, contentItems }) => {
     //Store Logo (also home button) // Search Bar // My Account // My Orders // Cart
     const navigate = useNavigate();
     const [loginDisplay, setLoginDisplay] = useState("none");
@@ -48,10 +49,7 @@ const StoreHeader = ({ cart, user, setUser }) => {
 
     return (<div className="store-header">
         <img className="store-logo" src={storeLogo} alt="Logo" />
-        <div>
-            <input type="text" />
-            <button>Search</button>
-        </div>
+        <StoreSearchBar contentItems={contentItems} />
         {displayLoginButton()}
         <Link to="./orders">
             Order History

@@ -464,6 +464,19 @@
     width: 200px;
     height: 200px;
   }
+  .store-searchbar-dropdown {
+    position: absolute;
+    /* z-index: 10; */
+    top: 30px;
+    left: 290px;
+    background-color: lightgrey ;
+    width: 150px;
+    border: 2px solid darkgrey;
+  }
+  .store-searchbar-dropdown > div:hover {
+    background-color: white;
+    border: 1px solid black;
+  }
 }
 
 /* Large screens ----------- */

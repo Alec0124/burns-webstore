@@ -23,7 +23,6 @@ import { Route, Routes } from "react-router-dom";
 //Touch up Page (4) sep 15-16
 //Successful Chekout should create a new order for that user (2) sep 14
 //Need to create OrderHistory Component (3) sep 14
-//Need Search Bar Functionality for Webstore (1) sep 13
 
 
 //will need to review the admin security
@@ -143,7 +142,7 @@ function Webstore() {
 
   return (
     <div className="App">
-      <StoreHeader cart={cart} user={user} setUser={setUser} />
+      <StoreHeader contentItems={contentItems} cart={cart} user={user} setUser={setUser} />
       <NavMenu setSelectedCategory={setSelectedCategory} selectedCategory={selectedCategory} categoryList={categoryList} />
       <Routes>
         <Route path="/logout" element={<Logout setUser={setUser} />} />
