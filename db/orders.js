@@ -2,7 +2,7 @@
 
 const { client } = require("./client");
 const { testFirstRow, getQueryValuesString, getNestedTable, insertQueryValuesString } = require("./api");
-const { getLineItemsByOrder } = require("./lineItems");
+const { getLineItemsByOrder, createLineItem } = require("./lineItems");
 
 
 //creates order; line items attached seperately
@@ -24,21 +24,23 @@ const createOrder = async ({
     zipBilling,
     stateBilling,
     cityBilling,
+    lineItems
 
 }) => {
+    console.log("inside createOrder")
     const [valuesArray, queryString] = insertQueryValuesString([
         {
             name: '"userId"',
             value: userId,
-            type: 'string'
+            type: 'number'
         },
         {
-            name: "attnShipping",
+            name: '"attnShipping"',
             value: attnShipping,
             type: 'string'
         },
         {
-            name: "emailShipping",
+            name: '"emailShipping"',
             value: emailShipping,
             type: 'string'
         },
@@ -48,37 +50,37 @@ const createOrder = async ({
             type: 'string'
         },
         {
-            name: "address1Shipping",
+            name: '"address1Shipping"',
             value: address1Shipping,
             type: 'string'
         },
         {
-            name: "address2Shiping",
+            name: '"address2Shipping"',
             value: address2Shipping,
             type: 'string'
         },
         {
-            name: "zipShipping",
+            name: '"zipShipping"',
             value: zipShipping,
             type: 'string'
         },
         {
-            name: "stateShipping",
+            name: '"stateShipping"',
             value: stateShipping,
             type: 'string'
         },
         {
-            name: "cityShipping",
+            name: '"cityShipping"',
             value: cityShipping,
             type: 'string'
         },
         {
-            name: "attnBilling",
+            name: '"attnBilling"',
             value: attnBilling,
             type: 'string'
         },
         {
-            name: "emailBilling",
+            name: '"emailBilling"',
             value: emailBilling,
             type: 'string'
         },
@@ -88,27 +90,27 @@ const createOrder = async ({
             type: 'string'
         },
         {
-            name: "address1Billing",
+            name: '"address1Billing"',
             value: address1Billing,
             type: 'string'
         },
         {
-            name: "address2Billing",
+            name: '"address2Billing"',
             value: address2Billing,
             type: 'string'
         },
         {
-            name: "zipBilling",
+            name: '"zipBilling"',
             value: zipBilling,
             type: 'string'
         },
         {
-            name: "stateBilling",
+            name: '"stateBilling"',
             value: stateBilling,
             type: 'string'
         },
         {
-            name: "cityBilling",
+            name: '"cityBilling"',
             value: cityBilling,
             type: 'string'
         }
@@ -120,10 +122,19 @@ const createOrder = async ({
         //if there are no values passed in except token and id; this should error out as no values provided
 
         // console.log('queryString: ', queryValuesString);
-        const { rows } = await client.query(queryString, valuesArray);
-        testFirstRow(rows);
-        return rows[0];
-        // returns user object of updated row (not password);
+        const ordersResp = await client.query(queryString, valuesArray);
+        const order = ordersResp.rows[0];
+        //loop through line items and create line items in db using order id
+        //push each line into order.lineItems
+        const orderId = order.id;
+        const newLineItems = [];
+        await lineItems.forEach( lineItem => {
+            const newLineItem = createLineItem(lineItem, orderId);
+            console.log("newLineItem: ", newLineItem)
+            newLineItems.push(newLineItem);
+        });
+        order.lineItems = await Promise.all(newLineItems);
+        return order;
     }
     catch (error) {
         console.error('error creating order..', error);
@@ -229,11 +240,31 @@ const updateOrder = async ({ id, attn, email, phoneNumber, address, address2, zi
     //returns order object
 };
 //gets all orders by userId; includes lineItems
+const attachLineItemsToOrders = async (orders) => {
+    
+    const ordersWithLineItems = await orders.map(async order => {
+        order.lineItems = await getLineItemsByOrder(order.id);
+        return order
+    });
+    console.log("attach LineItems result", ordersWithLineItems);
+    return ordersWithLineItems
+
+};
 const getOrdersByUserId = async (id) => {
     console.log('running getOrdersByUserId..');
     try {
+        //rework this
+        // return await getNestedTable('orders', '"userId"', "lineItems", getLineItemsByOrder, id);
+        const ordersResp = await client.query(`SELECT * FROM orders WHERE "userId"=$1;`, [id]);
+        const orders = ordersResp.rows;
+        console.log(orders);
 
-        return await getNestedTable('orders', '"userId"', "lineItems", getLineItemsByOrder, id);
+
+
+        const result = await Promise.all(await attachLineItemsToOrders(orders));
+        console.log("result", result)
+
+        return result;
     }
 
     catch (error) {

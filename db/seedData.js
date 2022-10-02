@@ -97,7 +97,8 @@ async function createTables() {
     "attnShipping" VARCHAR(255),
     "emailBilling" VARCHAR(255),
     "emailShipping" VARCHAR(255),
-    "phoneNumber" VARCHAR(255),
+    "phoneShipping" VARCHAR(255),
+    "phoneBilling" VARCHAR(255),
     "address1Billing" VARCHAR(255),
     "address1Shipping" VARCHAR(255),
     "address2Billing" VARCHAR(255),
@@ -117,7 +118,8 @@ async function createTables() {
     cost FLOAT(12),
     price FLOAT(12),
     name VARCHAR(255),
-    description VARCHAR(255)
+    description VARCHAR(255),
+    "imageName" VARCHAR(255)
   );`);
     console.log('creating categories..');
     await client.query(`CREATE TABLE categories (
@@ -344,10 +346,22 @@ async function createInitialItemCategories() {
       { itemId: 9, categoryId: 1 },
       { itemId: 10, categoryId: 2 },
       { itemId: 11, categoryId: 1 },
-      { itemId: 12, categoryId: 1 }
+      { itemId: 12, categoryId: 1 },
+      { itemId: 8, categoryId: 3 },
+      { itemId: 9, categoryId: 3 },
+      { itemId: 10, categoryId: 3 },
+      { itemId: 11, categoryId: 3 },
+      { itemId: 12, categoryId: 3 },
+      { itemId: 5, categoryId: 2 },
+      { itemId: 6, categoryId: 2 },
+      { itemId: 7, categoryId: 2 },
+      { itemId: 8, categoryId: 2 }
 
     ];
-    const itemCategories = await Promise.all(itemCategoriesToCreate.map(createItemCategory));
+    const wrapper = async () => {
+      return itemCategoriesToCreate.map(createItemCategory)
+    }
+    const itemCategories = await Promise.all(await wrapper());
 
     console.log('itemCategories created:');
     console.log(itemCategories);

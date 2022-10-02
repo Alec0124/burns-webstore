@@ -10,7 +10,7 @@ const { createUser, loginUser, getAllUsers, client, getUserByUsername, updateUse
     removeItem, getLineItemsByOrder, removeLineItem,
     createCategory, getAllCategories, removeCategory, updateCategory, getItemCategoriesByCategory,
     removeItemCategory, createItemCategory, getItemByItemNumber, respError, getUserById, createImage,
-    createItemImage } = require('./db');
+    createItemImage, getOrdersByUserId } = require('./db');
 
 // create the express server here
 
@@ -75,8 +75,11 @@ const bodyParser = require('body-parser');
 // const fs = require("fs");
 
 // const { rebuildDB } = require('./db/seedData');
+// const wrapperRebuild = async () => {
+//     await rebuildDB();
+// };
+// wrapperRebuild();
 
-// rebuildDB();
 
 
 server.use(cors());
@@ -148,6 +151,7 @@ const verifyToken = async (req, res, next) => {
 
             const verified = jwt.verify(token, JWT_SECRET);
             console.log('token verifiied: ', verified);
+            req.token = verified;
             next();
         } else {
             res.status(401);
@@ -248,7 +252,7 @@ apiRouter.get(`/updates`, async (req, res, next) => {
     try {
         const lastUpdateRows = await client.query(`SELECT * FROM "lastUpdate";`);
         const lastUpdate = lastUpdateRows.rows[0];
-        const lastUpdatePackage = await lastUpdate.strigify();
+        const lastUpdatePackage = await lastUpdate.stringify();
         res.send(lastUpdatePackage);
         next();
 
@@ -396,8 +400,8 @@ usersRouter.patch('/:userId', verifyToken, setUpdateTimestamp, async (req, res, 
 
 //POST api/orders (optional token)
 //creates a new Order; if token provided then assign creator id
-//pass in optional "lineItems" array to have line items added to new order. NOT IMPLEMENTED
 ordersRouter.post('', verifyToken, async (req, res, next) => {
+    console.log("initiating create order...")
     const { orderDetails, lineItems } = req.body;
     const { userId,
         attnShipping,
@@ -414,7 +418,7 @@ ordersRouter.post('', verifyToken, async (req, res, next) => {
         address2Billing,
         zipBilling,
         stateBilling } = orderDetails;
-
+        console.log("checkpoint 1");
 
     try {
 
@@ -433,25 +437,15 @@ ordersRouter.post('', verifyToken, async (req, res, next) => {
             address1Billing,
             address2Billing,
             zipBilling,
-            stateBilling
+            stateBilling,
+            lineItems
         });
+
 
         // 
         //
-        if (!lineItems || !Array.isArray(lineItems)) {
-            res.send({ newOrder });
-            next();
-        } else {
-            // if there are line items...
-            const newLineItems = [];
-            lineItems.forEach(async lineItem => {
-                const newLineItem = await createLineItem(lineItem);
-                newLineItems.push(newLineItem);
-            });
-            newOrder.lineItems = newLineItems;
-            res.send(newOrder);
-            next();
-        };
+        console.log("new order created: ", newOrder);
+        next();
 
         // res.send({ message: 'create order success!', newOrder });
         // next();
@@ -553,6 +547,27 @@ ordersRouter.get('', verifyToken, async (req, res, next) => {
         const data = await getAllOrders();
 
         res.send(data);
+        next();
+    }
+    catch ({ name, message }) {
+        next({ name, message })
+    }
+
+});
+//GET api/orders/user
+//returns all orders by user token
+ordersRouter.get('/user', verifyToken, async (req, res, next) => {
+
+    try {
+        console.log("starting get api/orders/user")
+        const userId = req.token.id
+        console.log("get all orders for user id: ", userId)
+        ////
+        const ordersResp = await getOrdersByUserId(userId);
+        const orders = JSON.stringify(ordersResp);
+        res.send(orders);
+        //isssuuuessss
+        
         next();
     }
     catch ({ name, message }) {
@@ -725,16 +740,16 @@ lineItemsRouter.post('', verifyToken, async (req, res, next) => {
     //     };
     // };
     const quantity = Math.floor(req.body.quantity);
-    const { orderId, itemId, cost, price, name, description } = req.body;
+    const { orderId, itemId, cost, price, name, description, imageName } = req.body;
     //I'm thinking we can pass an item object with quantity, itemId, and orderId added to the object
     if (typeof (orderId) !== 'number' || typeof (itemId) !== 'number' || typeof (quantity) !== 'number' ||
-        typeof (cost) !== 'number' || typeof (price) !== 'number' || typeof (name) !== 'string' || typeof (description) !== 'string') {
+        typeof (cost) !== 'number' || typeof (price) !== 'number' || typeof (name) !== 'string' || typeof (description) !== 'string' ) {
         throw respError('invalid_data', 'data provided in body is invalid or missing')
     }
 
     try {
 
-        const lineItem = await createLineItem({ orderId, itemId, quantity, cost, price, name, description });
+        const lineItem = await createLineItem({ itemId, quantity, cost, price, name, description, imageName }, orderId);
 
         res.send(lineItem);
         next();

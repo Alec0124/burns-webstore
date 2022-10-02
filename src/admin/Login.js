@@ -44,6 +44,12 @@ const Login = ({user, setUser}) => {
         }
         catch (error) { throw error }
     };
+    const keyDownEventListener = async (e) => {
+        if (e.key === 'Enter') {
+            await onClickLogin(e);
+
+        }
+    }
     const storeUserObject = async (userObject) => {
         try {
             if (typeof (userObject) !== 'object') {
@@ -57,6 +63,8 @@ const Login = ({user, setUser}) => {
 
     };
 
+    // Document.addEventListener('keydown', keydownEventListener);
+
 
     return (<div className="Login">
         <div className="row">
@@ -68,11 +76,14 @@ const Login = ({user, setUser}) => {
         </div>
         <div className="row">
             Password:
-            <input type="password" onChange={onChangePassword} />
+            <input onKeyDown={keyDownEventListener} type="password" onChange={onChangePassword} />
         </div>
         <div className="row">
             <input type="submit" value="login" onClick={onClickLogin} />
             <button onClick={onClickCheckCookie}>Check cookie</button>
+        </div>
+        <div className="row">
+            Username: admin <br/> Password: password
         </div>
     </div>);
 };

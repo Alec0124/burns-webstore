@@ -61,6 +61,11 @@ const Login = ({user, setUser, displayLogin, setDisplayLogin}) => {
         catch(error) {throw error}
 
     };
+    const keyDownEventListener = async (e) => {
+        if(e.key === 'Enter') {
+            await onClickLogin(e);
+        }
+    }
 
 
     return (<div className="Login" style={{display: displayLogin}}>
@@ -71,7 +76,7 @@ const Login = ({user, setUser, displayLogin, setDisplayLogin}) => {
         </div>
         <div className="row">
             Password:
-            <input type="password" onChange={onChangePassword} />
+            <input type="password" onKeyDown={keyDownEventListener} onChange={onChangePassword} />
         </div>
         <div className="errors">
             {errorMessage}

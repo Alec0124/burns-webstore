@@ -26,9 +26,12 @@ const Item = ({ cart, setCart, contentItems }) => {
 
         if (cart.length < 1) {
             console.log('cart: ', cart);
-            const cartItem = activeItem;
+            const cartItem = {...activeItem};
             cartItem.ln = 1;
             cartItem.quantity = quantity;
+            !!cartItem.images && !!cartItem.images.thumbnail ? cartItem.imageName = cartItem.images.thumbnail.name : //
+            delete cartItem.categories;
+            delete cartItem.images;
             setCart([cartItem]);
         } else {
             console.log('cart: ', cart);
@@ -39,9 +42,12 @@ const Item = ({ cart, setCart, contentItems }) => {
                 newCart[indexInCart].quantity = newCart[indexInCart].quantity + quantity;
             } else {
                 const ln = cart[cart.length - 1].ln + 1;
-                const cartItem = activeItem;
+                const cartItem = {...activeItem};
                 cartItem.ln = ln;
                 cartItem.quantity = quantity;
+                !!cartItem.images && !!cartItem.images.thumbnail ? cartItem.imageName = cartItem.images.thumbnail.name : 
+                delete cartItem.categories;
+                delete cartItem.images;
                 newCart.push(cartItem);
             };
             setCart(newCart);

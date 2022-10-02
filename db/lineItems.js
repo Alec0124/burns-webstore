@@ -3,13 +3,13 @@ const { client } = require("./client");
 
 //attaches a lineItem to order
 //technically works
-const createLineItem = async ({ itemId, orderId, quantity, cost, price, name, description }) => {
+const createLineItem = async (lineItem, orderId) => {
 
     try {
-        const valuesArray = [itemId, orderId, quantity, cost, price, name, description];
+        const valuesArray = [lineItem.id, orderId, lineItem.ln, lineItem.quantity, lineItem.cost, lineItem.price, lineItem.name, lineItem.description, lineItem.imageName];
         console.log('creating lineItm sql');
-        const { rows } = await client.query(`INSERT INTO "lineItems"("itemId", "orderId", quantity, cost, price, name, description) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        const { rows } = await client.query(`INSERT INTO "lineItems"("itemId", "orderId", ln, quantity, cost, price, name, description, "imageName") 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *;`, valuesArray);
         testFirstRow(rows);
 

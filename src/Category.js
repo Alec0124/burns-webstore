@@ -26,15 +26,12 @@ const Category = ({ contentItems }) => {
             return ""
         }
     }
-    const mapContentItems = (id) => {
+    const displayStoreContent = (id) => {
 
 
-        if (!!contentItems) {
-            console.log('inside contentItems', contentItems)
-
+        if (!!contentItems && contentItems.length > 0) {
             return (<div className="store-content">
                 {contentItems.map((item) => {
-
 
                     if (item.categories.some((category) => category.id === Number(id))) {
 
@@ -53,7 +50,8 @@ const Category = ({ contentItems }) => {
                 }
             </div>)
         } else {
-            return null;
+            // console.log("store-message")
+            return null
         };
 
         // useEffect(() => {
@@ -64,7 +62,7 @@ const Category = ({ contentItems }) => {
 
     };
 
-    return mapContentItems(id);
+    return displayStoreContent(id);
 }
 
 export default Category;

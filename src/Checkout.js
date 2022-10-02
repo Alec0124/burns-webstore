@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {createOrder} from "./api"
 
 
 const Checkout = ({ cart, user, setCart }) => {
@@ -20,34 +21,37 @@ const Checkout = ({ cart, user, setCart }) => {
         navigate("/cart");
     }
     const onClickCheckout = (e) => {
+        try {
         e.preventDefault();
+        console.log("user: ", user)
         const isTransactionSuccess = true;
         if (!!isTransactionSuccess) {
             console.log('cart: ', cart);
-            // const orderDetails = {
-            //     userId:user.id,
-            //     attnShipping,
-            //     emailShipping,
-            //     phoneShipping,
-            //     address1Shipping,
-            //     address2Shipping,
-            //     zipShipping,
-            //     stateShipping,
-            //     attnBilling,
-            //     emailBilling,
-            //     phoneBilling,
-            //     address1Billing,
-            //     address2Billing,
-            //     zipBilling,
-            //     stateBilling
-
-
-            // }
-            // createOrder(user.token,);
+            const orderDetails = {
+                userId:user.id,
+                attnShipping:user.firstName + " " + user.lastname,
+                emailShipping:user.emailShipping,
+                phoneShipping:user.phoneShipping,
+                address1Shipping:user.address1Shipping,
+                address2Shipping:user.address2Shipping,
+                zipShipping:user.zipShipping,
+                stateShipping:user.stateShipping,
+                attnBilling:user.firstName + " " + user.lastname,
+                emailBilling:user.emailBilling,
+                phoneBilling:user.phoneBilling,
+                address1Billing:user.adddress1Billing,
+                address2Billing:user.address2Billing,
+                zipBilling:user.zipBilling,
+                stateBilling:user.stateBilling
+            }
+            createOrder(user.token, orderDetails, cart);
             setCart([]);
             localStorage.removeItem("cart");
             navigate('/home');
         }
+    } catch (error) {
+        console.error(error);
+    }
 
     }
 

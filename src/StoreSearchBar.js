@@ -1,10 +1,13 @@
 import { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 
 const StoreSearchBar = ({ contentItems }) => {
     //notes
     //can add additional functionallity with esc button, up down arrow keys, enter button
+
+    const searchIcon = require('./images/search.png')
 
     //states
     const [inputText, setInputText] = useState("");
@@ -41,7 +44,7 @@ const StoreSearchBar = ({ contentItems }) => {
     };
     //onClick Functions
     const onClickItem = (e) => {
-        const item = searchResults.find(item => 
+        const item = searchResults.find(item =>
             item.name === e.target.textContent
         )
         navigateTo(`/item/${item.itemNumber}`);
@@ -66,8 +69,11 @@ const StoreSearchBar = ({ contentItems }) => {
 
     // }
 
-    return <div>
-        <input type="text" value={inputText} onChange={onChangeInputText} /><button>Search</button>
+    return <div id="store-searchbar-root">
+        <input className="store-search-bar" type="text" value={inputText} onChange={onChangeInputText} />
+        <button  className="store-search-bar-button" >
+            <img src={searchIcon} alt="search" />
+        </button>
         {displaySearchResults()}
     </div>
 };

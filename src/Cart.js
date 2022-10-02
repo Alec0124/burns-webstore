@@ -55,7 +55,7 @@ const Cart = ({ cart, setCart, user, setUser }) => {
 
     const displayCart = () => {
         if (cart.length < 1) {
-            return <div> No items are in your cart.</div>
+            return <div className="cart-message"> No items are in your cart.</div>
         } else {
             return <table className="cart-table">
                 <tbody>

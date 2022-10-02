@@ -10,6 +10,7 @@ import Home from "./Home.js";
 import Logout from "./Logout.js";
 import StoreFooter from "./StoreFooter.js";
 import StoreHeader from "./StoreHeader.js";
+import OrderHistory from "./OrderHistory.js";
 import { useState, useEffect } from "react";
 import { BASE_URL, getAllCategories, getAllItems, checkForUpdates } from "./api/index.js";
 import { Route, Routes } from "react-router-dom";
@@ -18,11 +19,12 @@ import { Route, Routes } from "react-router-dom";
 //thumbnail size 200x200
 //small size 730 x 400
 //large size 1280 x 900
+//order lineItems are not saving cost. I think cost will have to be included on server side.
 
 //toDoList
-//Touch up Page (4) sep 15-16
-//Successful Chekout should create a new order for that user (2) sep 14
-//Need to create OrderHistory Component (3) sep 14
+//Touch up Page (3) sep 15-16
+//Successful Chekout should create a new order for that user (1) sep 14
+//Need to create OrderHistory Component (2) sep 14
 
 
 //will need to review the admin security
@@ -142,7 +144,7 @@ function Webstore() {
 
   return (
     <div className="App">
-      <StoreHeader contentItems={contentItems} cart={cart} user={user} setUser={setUser} />
+      <StoreHeader categoryList={categoryList} contentItems={contentItems} cart={cart} user={user} setUser={setUser} />
       <NavMenu setSelectedCategory={setSelectedCategory} selectedCategory={selectedCategory} categoryList={categoryList} />
       <Routes>
         <Route path="/logout" element={<Logout setUser={setUser} />} />
@@ -153,6 +155,7 @@ function Webstore() {
         <Route path="/checkout" element={<Checkout setCart={setCart} cart={cart} user={user} />} />
         <Route path="/item/:itemNumber" element={<Item contentItems={contentItems} cart={cart} setCart={setCart} />} />
         <Route path="/category/:id" element={<Category contentItems={contentItems} />} />
+        <Route path="/order-history" element={<OrderHistory user={user} />} />
       </Routes>
       <StoreFooter />
     </div>

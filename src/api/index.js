@@ -291,22 +291,36 @@ const getCategoriesOfItem = async (id) => {
     return tempCategories
 };
 
-//////
+////// Orders
 
 const createOrder = async (token, orderDetails, lineItems) => {
     const orderResp = await fetch(`${BASE_URL}/orders`, {
+        method: "POST",
         headers: {
             "Content-Type": "application/json",
             "authorization": `Bearer ${token}`
         },
-        body: {
+        body: JSON.stringify({
             lineItems, orderDetails
-        }
+        })
     });
     const newOrder = await orderResp.json();
     return newOrder;
 
 };
+const getOrdersByUser = async (token) => {
+    const ordersResp = await fetch(`${BASE_URL}/orders/user`, {
+        method: "GET",
+        headers: {
+            "Content-Type":"application/json",
+            "authorization":`Bearer ${token}`
+        }
+    });
+    console.log("ordersResp: ", ordersResp)
+    const orders = await ordersResp.json();
+    console.log("orders: ", orders)
+    return orders;
+}
 
 /// images
 
@@ -459,5 +473,6 @@ module.exports = {
     saveHomeBannerImage,
     saveItemImage,
     checkForUpdates,
+    getOrdersByUser,
     BASE_URL
 };
