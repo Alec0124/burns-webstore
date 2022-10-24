@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {createOrder} from "./api"
+import {createOrder} from "/api"
 
 
 const Checkout = ({ cart, user, setCart }) => {
