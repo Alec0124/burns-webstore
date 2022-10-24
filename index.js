@@ -14,7 +14,7 @@ const { createUser, loginUser, getAllUsers, client, getUserByUsername, updateUse
 
 // create the express server here
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const express = require('express');
 const multer = require('multer');
 const path = require("path");
