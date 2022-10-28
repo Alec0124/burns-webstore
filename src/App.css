@@ -1219,7 +1219,7 @@ a:active {
 }
 
 /* Desktops and laptops ----------- */
-@media only screen and (min-width : 1224px) {
+@media only screen and (min-width : 801px) {
   .not-desktop {
     display: none;
   }
