@@ -13,7 +13,7 @@ const respError = async (name, message) => {
 const checkForUpdates = async (localStorageTime) => {
     const resp = await fetch(`${BASE_URL}/updates`);
     const lastUpdateTime = resp.json();
-    if( localStorageTime < lastUpdateTime) {
+    if (localStorageTime < lastUpdateTime) {
         localStorage.clear();
         return true
         //need to refresh React??
@@ -312,8 +312,8 @@ const getOrdersByUser = async (token) => {
     const ordersResp = await fetch(`${BASE_URL}/orders/user`, {
         method: "GET",
         headers: {
-            "Content-Type":"application/json",
-            "authorization":`Bearer ${token}`
+            "Content-Type": "application/json",
+            "authorization": `Bearer ${token}`
         }
     });
     console.log("ordersResp: ", ordersResp)
@@ -377,10 +377,10 @@ const saveHomeBannerImage = async (token, file) => {
         console.error(error);
     }
 };
-const saveItemImage = async ({token, thumbnailImage, smallImage, largeImage, itemNumber}) => {
+const saveItemImage = async ({ token, thumbnailImage, smallImage, largeImage, itemNumber }) => {
     //probably need to submit as formData
     try {
-        if(!thumbnailImage) {
+        if (!thumbnailImage) {
             throw new Error("no thumbnail file provided");
         }
         const formData = new FormData();
@@ -398,12 +398,12 @@ const saveItemImage = async ({token, thumbnailImage, smallImage, largeImage, ite
 
         console.log("imageResp", imageResp);
     }
-    
+
     catch (error) {
         console.error(error);
     }
     try {
-        if(!smallImage) {
+        if (!smallImage) {
             throw new Error("no small file provided");
         }
         const formData = new FormData();
@@ -421,12 +421,12 @@ const saveItemImage = async ({token, thumbnailImage, smallImage, largeImage, ite
 
         console.log("imageResp", imageResp);
     }
-    
+
     catch (error) {
         console.error(error);
     }
     try {
-        if(!largeImage) {
+        if (!largeImage) {
             throw new Error("no large file provided");
         }
         const formData = new FormData();
@@ -444,35 +444,32 @@ const saveItemImage = async ({token, thumbnailImage, smallImage, largeImage, ite
 
         console.log("imageResp", imageResp);
     }
-    
+
     catch (error) {
         console.error(error);
     }
 }
 
-
-module.exports = {
-    fetchCatalog,
-    fetchRegister,
-    getAllItems,
-    respError,
-    fetchUsers,
-    fetchLogin,
-    getItemByItemNumber,
-    getAllCategories,
-    createItem,
-    getUserByUsername,
-    updateItem,
-    removeItem,
-    createCategory,
-    updateCategory,
-    removeCategory,
-    createOrder,
-    getCategoriesOfItem,
-    saveStoreLogoImage,
-    saveHomeBannerImage,
-    saveItemImage,
-    checkForUpdates,
-    getOrdersByUser,
-    BASE_URL
-};
+export { fetchCatalog };
+export { fetchRegister };
+export { getAllItems };
+export { respError };
+export { fetchUsers };
+export { fetchLogin };
+export { getItemByItemNumber };
+export { getAllCategories };
+export { createItem };
+export { getUserByUsername };
+export { updateItem };
+export { removeItem };
+export { createCategory };
+export { updateCategory };
+export { removeCategory };
+export { createOrder };
+export { getCategoriesOfItem };
+export { saveStoreLogoImage };
+export { saveHomeBannerImage };
+export { saveItemImage };
+export { checkForUpdates };
+export { getOrdersByUser };
+export { BASE_URL };
