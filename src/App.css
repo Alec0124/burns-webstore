@@ -7,7 +7,10 @@ body {
 }
 
 /* Styles */
-
+.hamburger-image {
+  width: 50px;
+  height: 50px;
+}
 .admin-app {
   text-align: center;
   display: grid;
@@ -1203,37 +1206,9 @@ a:active {
   }
 }
 
-/* iPads (portrait and landscape) ----------- */
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
-  /* Styles */
-}
-
-/* iPads (landscape) ----------- */
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
-  /* Styles */
-}
-
-/* iPads (portrait) ----------- */
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
-  /* Styles */
-}
-
 /* Desktops and laptops ----------- */
-@media only screen and (min-width : 801px) {
+@media only screen and (min-width : 801px) and (min-device-width : 801px) {
   .not-desktop {
     display: none;
   }
-}
-
-/* Large screens ----------- */
-@media only screen and (min-width : 1824px) {
-
-  /* Styles */
-
-}
-
-/* iPhone 4 ----------- */
-@media only screen and (-webkit-min-device-pixel-ratio : 1.5),
-only screen and (min-device-pixel-ratio : 1.5) {
-  /* Styles */
 }
