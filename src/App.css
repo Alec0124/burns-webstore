@@ -588,7 +588,7 @@ a:active {
 }
 
 /* Smartphones (portrait) ----------- */
-@media (max-width : 800px) {
+@media only screen and (max-width : 800px) {
 
   /* Styles */
   .not-mobile {
@@ -1207,7 +1207,7 @@ a:active {
 }
 
 /* Desktops and laptops ----------- */
-@media (min-width : 801px) and (min-device-width : 801px) {
+@media only screen and (min-width : 801px) {
   .not-desktop {
     display: none;
   }
