@@ -251,7 +251,7 @@ a:active {
   text-align: center;
   width: 100%;
   display: grid;
-  grid-template-columns: 1400px;
+  grid-template-columns: 100%;
   grid-template-rows: 50px, 50px, 800px, 50px;
 }
 
