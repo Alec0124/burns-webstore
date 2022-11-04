@@ -1,10 +1,10 @@
 {
   "name": "burns-webstore",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "engines": {
-    "npm" : "8.12.1",
-    "node" : "16.15.1"
+    "npm": "8.12.1",
+    "node": "16.15.1"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
@@ -25,8 +25,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "node src/index.js",
-    "build": "webpack",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "dev:start": "react-scripts start",
     "dev:server": "nodemon index.js"
   },
@@ -63,5 +63,8 @@
   "bugs": {
     "url": "https://github.com/Alec0124/burns-webstore/issues"
   },
-  "homepage": "/"
+  "homepage": "/",
+  "devDependencies": {
+    "webpack-cli": "^4.10.0"
+  }
 }
