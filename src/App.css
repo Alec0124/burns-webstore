@@ -11,6 +11,7 @@ body {
   width: 50px;
   height: 50px;
 }
+
 .admin-app {
   text-align: center;
   display: grid;
@@ -395,8 +396,8 @@ a:active {
 
 .home-banner {
   padding-top: 50px;
-  width: 1200px;
-  height: 200px;
+  width: 100%;
+  height: auto;
 
 }
 
@@ -412,14 +413,17 @@ a:active {
   left: 300px;
 
 }
+
 .cart-message {
   font-size: 1.4rem;
   grid-area: 2 / 2 / 3 / 5;
   text-align: center;
 }
+
 .username {
   color: blue
 }
+
 .register {
   height: 700px;
   margin-top: 120px;
@@ -451,7 +455,6 @@ a:active {
 
 .store-search-bar {
   margin-top: 5px;
-  width: 500px;
   height: 30px;
 }
 
@@ -507,6 +510,7 @@ a:active {
   flex-flow: column nowrap;
   padding: 50px 150px 0px;
 }
+
 .order-history-image {
   margin: 2px;
 }
@@ -577,15 +581,6 @@ a:active {
 }
 
 
-/* Smartphones (portrait and landscape) ----------- */
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-  /* Styles */
-}
-
-/* Smartphones (landscape) ----------- */
-@media only screen and (min-width : 321px) {
-  /* Styles */
-}
 
 /* Smartphones (portrait) ----------- */
 @media only screen and (max-width : 800px) {
@@ -594,13 +589,14 @@ a:active {
   .not-mobile {
     display: none;
   }
+
   #order-history {
     grid-area: 3 / 1 / 4 / 2;
     display: flex;
     flex-flow: column nowrap;
     padding: 10px 10px 0px;
   }
-  
+
 
   /* hamburger menu */
   .hamburger-image {
@@ -651,559 +647,15 @@ a:active {
     justify-content: flex-end;
   }
 
-  /* admin section */
-  .admin-app {
-    text-align: center;
-    display: grid;
-    grid-template-columns: 1fr 7fr;
-    grid-template-rows: 1fr;
-    background-color: darkgrey;
-  }
-
-  .admin-nav {
-    grid-area: 1 / 1 / 2 / 2;
-    display: flex;
-    flex-flow: column nowrap;
-    height: 100%;
-  }
-
-  .admin-nav-cat {
-    border: 1px solid black;
-    flex: 1 0 50px;
-    padding-top: 20%;
-    padding-bottom: 5%;
-    background-color: navy;
-    color: white;
-  }
-
-  .selected {
-    background-color: darkcyan;
-  }
-
-  .selected:hover {
-    background-color: darkcyan;
-    color: white;
-  }
-
-  .admin-nav-cat:hover {
-    background-color: cornflowerblue;
-    color: black;
-  }
-
-  .selected:hover {
-    background-color: darkcyan;
-    color: white;
-  }
-
-  .admin-body {
-    grid-area: 1 / 2 / 2 / 3;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-  }
-
-  .admin-descriptions {
-    flex: 1 0 25%;
-    background-color: white;
-  }
-
-  .admin-fields {
-    flex: 1 0 25%;
-    background-color: beige;
-  }
-
-  .admin-values {
-    flex: 1 0 25%;
-    background-color: lightgray;
-  }
-
-  .admin-values,
-  .admin-fields,
-  .admin-descriptions {
-    display: flex;
-    flex-flow: column nowrap;
-    padding-top: 20px;
-  }
-
-  .admin-values>.row,
-  .admin-fields>.row,
-  .admin-descriptions>.row {
-    flex: 1 0 30px;
-  }
-
-  .item-master {
-    margin-top: 100px;
-    background-color: aqua;
-    height: 506px;
-    flex: 0 0 900px;
-    border: 2px solid black;
-    border-radius: 12px;
-    display: flex;
-    flex-flow: column wrap;
-    padding-top: 20px;
-    padding-left: 5px;
-  }
-
-  .item-master>.row {
-    flex: 0 0 20px;
-    display: flex;
-    flex-flow: row nowrap;
-    background-color: aliceblue;
-    border-radius: 12px;
-    border: solid 1px black;
-    padding: 2px;
-  }
-
-  .item-master>.row>button {
-    padding: 4px;
-    flex: 0 0 100px;
-    font-weight: bold;
-  }
-
-  .item-master>.row>button.inactive {
-    background-color: darkgray;
-    color: lightgray;
-  }
-
-  .search-icon {
-    padding: 4px;
-    background-color: white;
-  }
-
-  .search-icon:hover {
-    background-color: darkcyan;
-  }
-
-  .Loading {
-    position: absolute;
-    top: 250px;
-    left: 500px;
-    width: 400px;
-    height: 100px;
-    background-color: lightblue;
-    color: black;
-    border: 2px solid black;
-    text-align: center;
-    padding-top: 70px;
-    font-size: 24pt;
-  }
-
-  .search-dropdown {
-    position: absolute;
-    background-color: white;
-    margin-top: 25px;
-    margin-left: 50px;
-    width: 150px;
-    text-align: left;
-    border: 1px solid black;
-    z-index: 100;
-  }
-
-  .search-dropdown-row {
-    padding: 5px;
-    /* z-index: 10; */
-  }
-
-  .search-dropdown-row:hover {
-    background-color: blue;
-  }
-
-  .list-exchange {
-    position: absolute;
-    width: 800px;
-    height: 400px;
-    background-color: lightblue;
-    color: black;
-    border: 2px solid black;
-    text-align: center;
-    font-size: 18pt;
-    display: flex;
-    flex-flow: row nowrap;
-  }
-
-  .category-selected,
-  .category-list {
-    border: 1px solid navy;
-    flex: 1 0 200px;
-  }
-
-  .category-list>.row:hover {
-    background-color: green;
-  }
-
-  .category-selected>.row:hover {
-    background-color: red;
-  }
-
-  .list-view {
-    position: absolute;
-    width: 1000px;
-    height: 400px;
-    background-color: lightblue;
-    overflow: scroll;
-    display: block;
-    z-index: 10;
-  }
-
-  .item-search>.row {
-    color: black;
-  }
-
-  .table-header {
-    background-color: darkgreen;
-    color: white;
-  }
-
-  .table-cell {
-    border: 1px solid black;
-  }
-
-  .pop-up-dialog {
-    font-size: 16pt;
-    position: absolute;
-    border: 2px solid navy;
-    border-radius: 12px;
-    z-index: 10;
-    background-color: antiquewhite;
-    width: 800px;
-    height: 250px;
-    padding-top: 150px;
-  }
-
-  .pop-up-dialog>button {
-    padding: 2px;
-    margin: 5px;
-  }
-
-  a:hover {
-    /* background-color: cyan; */
-    color: green;
-  }
-
-  a,
-  a:hover,
-  a:focus,
-  a:active {
-    text-decoration: none;
-    color: inherit;
-  }
-
-  /* User End / Store Page Styles */
-
-  .App {
-    text-align: center;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 100%;
-    grid-template-rows: 50px, 50px, 800px, 50px;
-  }
-
-  .store-content {
-    overflow: scroll;
-    display: flex;
-    flex-flow: row wrap;
-    /* border: 5px solid black; */
-    grid-area: 3 / 1 / 4 / 2;
-    height: 800px;
-
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
-
-  .thumbnail {
-    display: flex;
-    flex-flow: column nowrap;
-    /* border: 3px solid blue; */
-    /* height: 194px; */
-    flex-basis: 100px;
-    align-items: center;
-    margin: 10px 0px;
-    margin-left: 60px;
-
-  }
-
-  .thumbnail>img {
-    width: 200px;
-    /* border: 3px solid black; */
-    flex-basis: 200px;
-    height: 200px;
-  }
-
-  /* .thumbnail-image {
-    width: 200px;
-    border: 3px solid black;
-    flex-basis: 200px;
-  } */
-
-  .nav-menu {
-    display: none;
-  }
-
+  .store-home,
+  .nav-menu,
   .store-header {
-    grid-area: 1 / 1 / 2 / 3;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    background-color: #f1c868;
+    width: 100%;
+  }
+  .store-content {
+    height: 100%
   }
 
-  .store-footer {
-    grid-area: 4 / 1 / 5 / 2;
-    display: flex;
-    flex-flow: row nowrap;
-  }
-
-  .store-item {
-    overflow: scroll;
-    display: flex;
-    flex-flow: column nowrap;
-    border: 5px solid black;
-    grid-area: 3 / 1 / 4 / 2;
-    height: 800px;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
-  .cart {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-template-rows: 200px 1fr 100px;
-    grid-area: 3 / 1 / 4 / 2;
-    /* width: 100; */
-    height: 700px;
-    /* background-color: aqua; */
-    /* padding: 100px; */
-  }
-
-  .cart-address {
-    align-self: center;
-    grid-area: 1 / 2 / 2 / 5;
-    display: grid;
-    grid-template-columns: 1fr, 1fr;
-    grid-template-rows: 1fr;
-  }
-
-  .cart-table {
-    grid-area: 2 / 2 / 3 / 5;
-    border: 1px solid black;
-  }
-
-  .cart-table>tbody>tr>td {
-    border: 1px solid black;
-  }
-
-  .cart-buttons {
-    grid-area: 3 / 2 / 4 / 5;
-  }
-
-  .cart-ship {
-    grid-area: 1 / 1 / 2 / 2;
-  }
-
-  .cart-bill {
-
-    grid-area: 1 / 2 / 2 / 3;
-  }
-
-  .cart-bill,
-  .cart-ship {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-  }
-
-  .cart-ship-column {
-    margin-left: 5px;
-    margin-right: 5px;
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: space-between;
-    /* align-content: flex-start; */
-    text-align: left;
-  }
-
-
-
-  .store-home {
-    /* background-color: blue; */
-    grid-area: 3 / 1 / 4 / 2;
-    /* height: 700px; */
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 100px 1fr;
-  }
-
-  .home-banner {
-    padding-top: 15px;
-    width: 300px;
-    height: 50px;
-
-  }
-
-  .store-logo {
-    width: 150px;
-    height: 50px;
-
-  }
-
-  .register-popout {
-    flex-flow: column nowrap;
-    justify-content: space-between;
-    position: absolute;
-    background-color: lightblue;
-    width: 800px;
-    padding: 15px;
-    border: double 5px navy;
-    border-radius: 12px;
-    left: 300px;
-
-  }
-
-  .register {
-    height: 700px;
-    margin-top: 120px;
-  }
-
-  .register-address {
-
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-around;
-    margin: 15px 60px;
-    padding: 15px 0px;
-    border: dotted 2px orange;
-  }
-
-  .errors {
-    color: red;
-  }
-
-  .search-bar {
-    width: 150px;
-    height: 25px;
-  }
-
-  .store-search-bar {
-    margin-top: 5px;
-    width: 500px;
-    height: 30px;
-  }
-
-  .store-search-bar-button {
-    height: 35px;
-    width: 35px;
-
-  }
-
-  .store-header>a {
-    flex-basis: 100px;
-  }
-
-  .item-master-images {
-    position: absolute;
-    top: 200px;
-    width: 800px;
-    height: 400px;
-    background-color: lightblue;
-    color: black;
-    border: 2px solid black;
-    text-align: center;
-    font-size: 18pt;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-  }
-
-  .item-master-image {
-    width: 200px;
-    height: 200px;
-  }
-
-  #store-searchbar-root {
-    display: none;
-  }
-
-  .store-searchbar-dropdown {
-    position: absolute;
-    /* z-index: 10; */
-    top: 30px;
-    left: 290px;
-    background-color: lightgrey;
-    width: 150px;
-    border: 2px solid darkgrey;
-  }
-
-  .store-searchbar-dropdown>div:hover {
-    background-color: white;
-    border: 1px solid black;
-  }
-
-  
-
-  .order-history-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: left;
-    margin-bottom: 10px;
-  }
-
-  .order {
-    display: flex;
-    flex-flow: column nowrap;
-    border: double 5px black;
-    border-radius: 12px;
-    margin: 6px 0px;
-  }
-
-  .order-details {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    border-bottom: solid 1px darkgray;
-    background-color: #f6f6f6;
-    padding: 10px 5px;
-  }
-
-  .order-details>div {
-    font-size: 0.9rem;
-  }
-
-  .order-details-left {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    flex-basis: 400px;
-  }
-
-  .line-items {
-    width: 100%
-  }
-
-  .order-status {
-    font-size: 1.2rem;
-    margin: 10px 5px;
-    text-align: left;
-    font-weight: bold;
-  }
-
-  .line-item {
-    display: flex;
-  }
-
-  .line-item-button {
-    height: 30px;
-    border-radius: 12px;
-    margin: 0px 3px;
-  }
-
-  .line-item>img {
-    width: 150px;
-    height: 150px;
-  }
-
-  .line-item>div {
-    flex-basis: 600px;
-  }
 }
 
 /* Desktops and laptops ----------- */
