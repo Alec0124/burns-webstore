@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'http://18.210.13.51/api/api';
 // 35.245.212.150
 
 // *** Functions ***
