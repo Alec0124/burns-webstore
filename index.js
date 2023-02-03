@@ -74,11 +74,11 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 // const fs = require("fs");
 
-const { rebuildDB } = require('./db/seedData');
-const wrapperRebuild = async () => {
-    await rebuildDB();
-};
-wrapperRebuild();
+// const { rebuildDB } = require('./db/seedData');
+// const wrapperRebuild = async () => {
+//     await rebuildDB();
+// };
+// wrapperRebuild();
 
 
 
