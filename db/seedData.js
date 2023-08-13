@@ -21,6 +21,7 @@ async function dropTables() {
     console.log('Dropping All Tables...');
     // drop all tables, in the correct order
     await client.query(`
+      DROP TABLE IF EXISTS "metadata";
       DROP TABLE IF EXISTS "lastUpdate";
       DROP TABLE IF EXISTS "itemCategories";
       DROP TABLE IF EXISTS "itemImages";
@@ -48,6 +49,11 @@ async function createTables() {
     await client.query(`CREATE TABLE "lastUpdate" (
       id SERIAL PRIMARY KEY,
       "timeStamp" VARCHAR(255) NOT NULL
+    );`);
+    console.log(`creating metadata`);
+    await client.query(`CREATE TABLE "metadata" (
+      id SERIAL PRIMARY KEY,
+      "databaseExists" BOOLEAN DEFAULT true NOT NULL
     );`);
     console.log('creating users..');
     await client.query(`
@@ -330,6 +336,20 @@ async function createInitialLastUpdate() {
   }
 };
 
+async function createInitialMetaData() {
+  
+  try {
+    const { rows } = await client.query(`INSERT INTO "metadata" ("databaseExists") 
+      VALUES (true);`);
+
+
+    console.log('databaseExists created:');
+  } catch (error) {
+    console.error('Error creating lastUpdate!');
+    throw error;
+  }
+};
+
 async function createInitialItemCategories() {
   console.log('Starting to create itemCategories...');
   try {
@@ -442,12 +462,20 @@ async function createInitialImages() {
 
 
 
-async function rebuildDB() {
+async function rebuildDB(forceRebuild) {
   try {
+
+    const {rows} = await client.query("SELECT * FROM metadata;");
+
+    const databaseExists = rows.length > 0 ? true : false;
+
+    if(!!forceRebuild || !databaseExists) {
+
     // client.connect();
     await dropTables();
     await createTables();
     await createInitialLastUpdate();
+    await createInitialMetaData();
     await createInitialUsers();
     await createInitialItems();
     await createInitialImages();
@@ -455,7 +483,10 @@ async function rebuildDB() {
     // await createInitialLineItems();
     await createInitialCategories();
     await createInitialItemCategories();
-    console.log("Building DB complegte.")
+    console.log("Building DB complegte.");
+    } else {
+      console.log("DB already exists. use force=true to override.");
+    }
   } catch (error) {
     console.log('Error during rebuildDB');
     throw error;

@@ -1,5 +1,5 @@
-const testDotenv = require('dotenv').config();
-if (testDotenv.error) { console.log(testDotenv.error) }
+// const testDotenv = require('dotenv').config();
+// if (testDotenv.error) { console.log(testDotenv.error) }
 const jwt = require('jsonwebtoken');
 // const { JWT_SECRET } = process.env;
 const JWT_SECRET = 'apples';
@@ -14,7 +14,7 @@ const { createUser, loginUser, getAllUsers, client, getUserByUsername, updateUse
 
 // create the express server here
 
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 const express = require('express');
 const multer = require('multer');
 const path = require("path");
@@ -74,11 +74,11 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 // const fs = require("fs");
 
-// const { rebuildDB } = require('./db/seedData');
-// const wrapperRebuild = async () => {
-//     await rebuildDB();
-// };
-// wrapperRebuild();
+const { rebuildDB } = require('./db/seedData');
+const wrapperRebuild = async () => {
+    await rebuildDB(false);
+};
+wrapperRebuild();
 
 
 
