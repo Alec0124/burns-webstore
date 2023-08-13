@@ -3,9 +3,9 @@
 const { Client } = require('pg');
 // const DB_URL = process.env.DATABASE_URL || 'postgres://localhost:5432/burns_webstore';
 const DB_NAME = "burns_webstore";
-const DB_HOST = "burns-webstore-2.cs2bajfptwuz.us-east-1.rds.amazonaws.com";
+const DB_HOST = "localhost";
 const DB_USER = "postgres";
-const DB_PASSWORD = "cT9kqTlH8NHjpFgETYSI";
+const DB_PASSWORD = "postgres";
 const DB_PORT = 5432;
 
 const client = new Client({
