@@ -324,6 +324,82 @@ a:active {
   justify-content: flex-start;
   align-items: center;
 }
+.store-item > button {
+  width: 20vw;
+  height: 5vh;
+  border-radius: 12px;
+  margin: 5px;
+  font-size: 3vh;
+  
+}
+.store-item > button:hover {
+  cursor: pointer;
+}
+/* .addedToCart {
+  background-color: lightgray;
+} */
+.addedToCart > .top-row {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 2vh;
+}
+.addedToCart > .top-row > .item-window {
+  display: flex;
+  justify-content: center;
+  background-color: rgb(222, 221, 221);
+  width: 65vw;
+  padding: 1vh 0;
+}
+.addedToCart >  .top-row > .item-window > img {
+  height: 100px;
+}
+.addedToCart >  .top-row > .item-window > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.addedToCart >  .top-row > .item-window > div > img.checkmark {
+  height: 50px;
+}
+.addedToCart >  .top-row > .item-window > div > span {
+  height: 50px;
+  font-size: 30px;
+}
+.addedToCart > .top-row > .cart-window {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column nowrap;
+  background-color: rgb(222, 221, 221);
+  width: 30vw;
+}
+.addedToCart > .top-row > .cart-window > div {
+  font-size: 2.5vh;
+}
+.addedToCart > .top-row > .cart-window > div > span.cart-value {
+  margin-left: 1vw;
+}
+.addedToCart > .top-row > .cart-window > button {
+  width: 20vw;
+  height: 3vh;
+  margin: 5px;
+  border-radius: 5px;
+}
+.addedToCart > .top-row > .cart-window > button.checkout {
+background-color: rgb(227, 224, 20);
+}
+.addedToCart > .shop-window {
+  display: flex;
+  flex-flow: column nowrap;
+}
+.addedToCart > .shop-window > .description {
+  display:flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  padding: 1vh 1vw;
+  font-size: 2.5vh;
+}
+
 
 .cart {
   display: grid;

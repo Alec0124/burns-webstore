@@ -51,7 +51,7 @@ async function createTables() {
       "timeStamp" VARCHAR(255) NOT NULL
     );`);
     console.log(`creating metadata`);
-    await client.query(`CREATE TABLE "metadata" (
+    await client.query(`CREATE TABLE metadata (
       id SERIAL PRIMARY KEY,
       "databaseExists" BOOLEAN DEFAULT true NOT NULL
     );`);
@@ -465,11 +465,15 @@ async function createInitialImages() {
 async function rebuildDB(forceRebuild) {
   try {
 
-    const {rows} = await client.query("SELECT * FROM metadata;");
+    try {
 
-    const databaseExists = rows.length > 0 ? true : false;
+    const metadata = await client.query("SELECT * FROM metadata;");
+    console.log("metadata: ", metadata);
+    } catch (error) {
+      console.error(error);
+    }
 
-    if(!!forceRebuild || !databaseExists) {
+    if(!!forceRebuild) {
 
     // client.connect();
     await dropTables();

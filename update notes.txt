@@ -1,0 +1,2 @@
+added item to cart pop up
+cleanup cart address/billing format.
